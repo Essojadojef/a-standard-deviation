@@ -1,0 +1,60 @@
+[gd_scene load_steps=6 format=3 uid="uid://ckf2xxh70s2f3"]
+
+[ext_resource type="Texture2D" uid="uid://cul88yj582qns" path="res://spaceship_2.png" id="1_7a2wo"]
+[ext_resource type="Script" path="res://spaceship.gd" id="1_c7e3v"]
+[ext_resource type="Gradient" uid="uid://b37nsfxbm2eef" path="res://color_spectrum.tres" id="2_uhg8q"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_1utq4"]
+blend_mode = 1
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1yeqw"]
+radius = 8.0
+
+[node name="Node2D" type="Node2D"]
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+modulate = Color(0, 1, 0, 1)
+material = SubResource("CanvasItemMaterial_1utq4")
+collision_mask = 0
+motion_mode = 1
+script = ExtResource("1_c7e3v")
+color_spectrum = ExtResource("2_uhg8q")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D"]
+use_parent_material = true
+texture = ExtResource("1_7a2wo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
+shape = SubResource("CircleShape2D_1yeqw")
+
+[node name="CharacterBody2D2" type="CharacterBody2D" parent="."]
+modulate = Color(0, 0, 1, 1)
+material = SubResource("CanvasItemMaterial_1utq4")
+collision_mask = 0
+motion_mode = 1
+script = ExtResource("1_c7e3v")
+color_shift = 0.5
+color_spectrum = ExtResource("2_uhg8q")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D2"]
+use_parent_material = true
+texture = ExtResource("1_7a2wo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D2"]
+shape = SubResource("CircleShape2D_1yeqw")
+
+[node name="CharacterBody2D3" type="CharacterBody2D" parent="."]
+modulate = Color(1, 0, 0, 1)
+material = SubResource("CanvasItemMaterial_1utq4")
+collision_mask = 0
+motion_mode = 1
+script = ExtResource("1_c7e3v")
+color_shift = -0.5
+color_spectrum = ExtResource("2_uhg8q")
+
+[node name="Sprite2D" type="Sprite2D" parent="CharacterBody2D3"]
+use_parent_material = true
+texture = ExtResource("1_7a2wo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D3"]
+shape = SubResource("CircleShape2D_1yeqw")
