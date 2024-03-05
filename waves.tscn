@@ -1,0 +1,83 @@
+[gd_scene load_steps=5 format=3 uid="uid://m1bpjr0ph3ji"]
+
+[sub_resource type="Shader" id="Shader_cm2ex"]
+code = "shader_type canvas_item;
+render_mode blend_mix;
+
+uniform sampler3D noise;
+
+float process_reflection(vec2 uv, float t, vec2 origin) {
+	origin;
+	float dist = distance(vec2(uv), origin);
+	float phase = (-dist * 5.) + t;
+	float sin_value = sin(clamp(phase * 10., 0, TAU * 10.));
+	float saw_value = 1. - phase / 10.;
+	return sin_value * saw_value * saw_value;
+}
+
+float simple_noise(float t) {
+	t = t * 0.735984 + 0.62688;
+	return sin(2. * t) + sin(PI * t);
+}
+
+void fragment() {
+	// common variables
+	vec2 uv = COLOR.rg * 2. - 1.;
+	float t = 0.00000 + mod(TIME * 2., 20.);
+
+	// no reflections
+	vec2 origin = vec2(0.50000, 0.50000);
+	float dist = distance(vec2(uv), origin);
+	float phase = (-dist * 5.) + t;
+	float value_0 = process_reflection(uv, t, vec2(1, 1) * origin + vec2(0, 0)); // reflect * origin + mirror_position
+
+	// + neighbours
+	float value_1 = process_reflection(uv, t, vec2(-1, 1) * origin + vec2(2, 0)) * .4;
+	float value_2 = process_reflection(uv, t, vec2(-1, 1) * origin - vec2(2, 0)) * .4;
+	float value_3 = process_reflection(uv, t, vec2(1, -1) * origin + vec2(0, 2)) * .4;
+	float value_4 = process_reflection(uv, t, vec2(1, -1) * origin - vec2(0, 2)) * .4;
+	// x neighbours
+	float value_5 = process_reflection(uv, t, vec2(-1, -1) * origin + vec2( 2,  2)) * .15;
+	float value_6 = process_reflection(uv, t, vec2(-1, -1) * origin + vec2( 2, -2)) * .15;
+	float value_7 = process_reflection(uv, t, vec2(-1, -1) * origin + vec2(-2,  2)) * .15;
+	float value_8 = process_reflection(uv, t, vec2(-1, -1) * origin + vec2(-2, -2)) * .15;
+
+	// sum of reflections
+	float sum = value_0 + value_1 + value_2 + value_3 + value_4 + value_5 + value_6 + value_7 + value_8;
+	// add noise
+	sum += (texture(noise, vec3(COLOR.xy, mod(t * .5, 1.))).r * 2. - 1.) * clamp(phase, 0., 1.) * .25;
+	//sum += sin(t * 1.48548947 + uv.r * 10.17894563 + uv.g * 10.7987897456 + .79451698);
+	/*sum += simple_noise(
+		t * 5. * sin(uv.x * 10.) * sin(uv.y * 5.) +
+		simple_noise(uv.x * 10.) + simple_noise(uv.y * 5.)
+	) - 1.;*/
+	COLOR.rgb = vec3(sum);
+
+
+}
+"
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_568df"]
+noise_type = 3
+seed = 190
+frequency = 0.3996
+fractal_type = 0
+fractal_octaves = 1
+metadata/_preview_in_3d_space_ = true
+
+[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_ornw8"]
+seamless = true
+seamless_blend_skirt = 0.5
+noise = SubResource("FastNoiseLite_568df")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_notns"]
+shader = SubResource("Shader_cm2ex")
+shader_parameter/noise = SubResource("NoiseTexture3D_ornw8")
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+material = SubResource("ShaderMaterial_notns")
+polygon = PackedVector2Array(256, 64, 384, 64, 384, 192, 256, 192)
+uv = PackedVector2Array(0, 0, 1, 0, 1, 1, 0, 1)
+vertex_colors = PackedColorArray(0, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1)
