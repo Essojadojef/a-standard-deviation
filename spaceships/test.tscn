@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://ckf2xxh70s2f3"]
 
 [ext_resource type="PackedScene" uid="uid://blae8gw2d70l3" path="res://spaceships/ship.tscn" id="1_jhkp7"]
-[ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.wav.ogg" id="4_mglmp"]
+[ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.ogg" id="4_mglmp"]
 
 [node name="Node2D" type="Node2D"]
 
