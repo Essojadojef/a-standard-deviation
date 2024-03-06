@@ -9,7 +9,7 @@ blend_mode = 1
 [sub_resource type="CircleShape2D" id="CircleShape2D_1yeqw"]
 radius = 4.0
 
-[node name="CharacterBody2D" type="CharacterBody2D"]
+[node name="PlayerSpaceship" type="CharacterBody2D" groups=["player", "player_spaceship"]]
 modulate = Color(0.435747, 0.5063, 1.92523e-07, 1)
 material = SubResource("CanvasItemMaterial_1utq4")
 use_parent_material = true

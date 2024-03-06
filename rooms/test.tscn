@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://dubtfii158n3u" path="res://enemies/space_enemy.tscn" id="3_8xppt"]
 [ext_resource type="Texture2D" uid="uid://cvbcj20m45txh" path="res://tiles.png" id="3_vtq3h"]
 [ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.ogg" id="4_mglmp"]
-[ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/character.tscn" id="6_hvayh"]
+[ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/frog.tscn" id="6_hvayh"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
 blend_mode = 1
@@ -25,6 +25,7 @@ sources/0 = SubResource("TileSetAtlasSource_vafml")
 script/source = "extends StaticBody2D
 
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
@@ -32,7 +33,21 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	pass
+	if !Globals.clone_spread.has(\"player_spaceship\"):
+		return
+	for i in [\"player_spaceship\"]:
+		if (Globals.clone_spread[i] as Vector2).length() < .1:
+			add_collision_exception_with_group(\"player_spaceship\")
+		if (Globals.clone_spread[i] as Vector2).length() > .1:
+			remove_collision_exception_with_group(\"player_spaceship\")
+
+func add_collision_exception_with_group(group_name: String):
+	for i in get_tree().get_nodes_in_group(group_name):
+		add_collision_exception_with(i)
+
+func remove_collision_exception_with_group(group_name: String):
+	for i in get_tree().get_nodes_in_group(group_name):
+		remove_collision_exception_with(i)
 "
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_bfv7i"]
@@ -64,7 +79,7 @@ func _on_body_exited(body: PhysicsBody2D):
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_odcde"]
 size = Vector2(64, 64)
 
-[node name="Node2D" type="Node2D"]
+[node name="Node2D2" type="Node2D"]
 material = SubResource("CanvasItemMaterial_328yp")
 script = ExtResource("1_6mgkh")
 
@@ -101,7 +116,7 @@ polygon = PackedVector2Array(0, 0, 0, 320, 512, 320, 512, 0)
 position = Vector2(128, 128)
 
 [node name="Area2D" type="StaticBody2D" parent="."]
-position = Vector2(256, 128)
+position = Vector2(256, 192)
 rotation = -1.57079
 collision_layer = 2
 collision_mask = 3

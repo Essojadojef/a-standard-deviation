@@ -32,9 +32,9 @@ func _physics_process(delta: float) -> void:
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	if direction:
-		velocity = direction * movement_speed
+		velocity = velocity.move_toward(direction * movement_speed, movement_speed / 20)
 	else:
-		velocity = velocity.move_toward(Vector2(), movement_speed)
+		velocity = velocity.move_toward(Vector2(), movement_speed / 20)
 	
 	var forw_vector = (get_global_mouse_position() - global_position).normalized()
 	var forw_vector_angle = forw_vector.angle()
@@ -55,6 +55,9 @@ func _physics_process(delta: float) -> void:
 	transform.x = right_vector"""
 
 	move_and_slide()
+	
+	if is_on_wall():
+		velocity = velocity.slide(get_wall_normal())
 
 func _draw() -> void:
 	draw_line(Vector2(), Vector2.UP * 1024, Color.WHITE)
