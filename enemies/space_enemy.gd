@@ -91,3 +91,9 @@ func shoot():
 
 func get_forward_vector():
 	return -transform.y.normalized()
+
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	if body.scene_file_path == "res://spaceships/projectile.tscn":
+		if body.color_shift == color_shift:
+			queue_free()

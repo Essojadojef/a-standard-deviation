@@ -10,10 +10,8 @@ blend_mode = 1
 [sub_resource type="CircleShape2D" id="CircleShape2D_1yeqw"]
 radius = 8.0
 
-[node name="CharacterBody2D" type="CharacterBody2D"]
-modulate = Color(0.435747, 0.5063, 1.92523e-07, 1)
+[node name="SpaceEnemy" type="CharacterBody2D"]
 material = SubResource("CanvasItemMaterial_1utq4")
-use_parent_material = true
 collision_mask = 0
 motion_mode = 1
 script = ExtResource("1_s8cbw")
@@ -22,6 +20,15 @@ color_spectrum = ExtResource("2_a83o3")
 [node name="Sprite2D" type="Sprite2D" parent="."]
 use_parent_material = true
 texture = ExtResource("3_utssp")
+hframes = 2
+vframes = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_1yeqw")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_1yeqw")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
