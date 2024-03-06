@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://ckf2xxh70s2f3"]
+[gd_scene load_steps=14 format=3 uid="uid://ckf2xxh70s2f3"]
 
 [ext_resource type="Script" path="res://spaceships/test.gd" id="1_6mgkh"]
 [ext_resource type="PackedScene" uid="uid://blae8gw2d70l3" path="res://spaceships/ship.tscn" id="1_jhkp7"]
 [ext_resource type="PackedScene" uid="uid://dubtfii158n3u" path="res://enemies/space_enemy.tscn" id="3_8xppt"]
 [ext_resource type="Texture2D" uid="uid://cvbcj20m45txh" path="res://tiles.png" id="3_vtq3h"]
 [ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.ogg" id="4_mglmp"]
+[ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/character.tscn" id="6_hvayh"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
 blend_mode = 1
@@ -20,13 +21,56 @@ texture_region_size = Vector2i(32, 32)
 [sub_resource type="TileSet" id="TileSet_ud7aq"]
 sources/0 = SubResource("TileSetAtlasSource_vafml")
 
+[sub_resource type="GDScript" id="GDScript_3ggpt"]
+script/source = "extends StaticBody2D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bfv7i"]
+size = Vector2(64, 32)
+
+[sub_resource type="GDScript" id="GDScript_71gqr"]
+script/source = "extends Area2D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	body_entered.connect(_on_body_entered)
+	body_exited.connect(_on_body_exited)
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+
+func _on_body_entered(body: PhysicsBody2D):
+	if \"velocity_field\" in body:
+		body.velocity_field = 1
+
+func _on_body_exited(body: PhysicsBody2D):
+	if \"velocity_field\" in body:
+		body.velocity_field = 0
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_odcde"]
+size = Vector2(64, 64)
+
 [node name="Node2D" type="Node2D"]
 material = SubResource("CanvasItemMaterial_328yp")
 script = ExtResource("1_6mgkh")
 
-[node name="CharacterBody2D" parent="." instance=ExtResource("1_jhkp7")]
+[node name="PlayerSpaceship" parent="." instance=ExtResource("1_jhkp7")]
 
-[node name="CharacterBody2D2" parent="." instance=ExtResource("3_8xppt")]
+[node name="SpaceEnemy" parent="." instance=ExtResource("3_8xppt")]
 position = Vector2(320, 128)
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
@@ -52,3 +96,28 @@ layer = -9
 [node name="Polygon2D" type="Polygon2D" parent="CanvasLayer"]
 color = Color(0, 0, 0, 0.501961)
 polygon = PackedVector2Array(0, 0, 0, 320, 512, 320, 512, 0)
+
+[node name="CharacterBody2D" parent="." instance=ExtResource("6_hvayh")]
+position = Vector2(128, 128)
+
+[node name="Area2D" type="StaticBody2D" parent="."]
+position = Vector2(256, 128)
+rotation = -1.57079
+collision_layer = 2
+collision_mask = 3
+script = SubResource("GDScript_3ggpt")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_bfv7i")
+
+[node name="Area2D2" type="Area2D" parent="."]
+position = Vector2(256, 64)
+rotation = -1.57079
+collision_layer = 3
+collision_mask = 3
+script = SubResource("GDScript_71gqr")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D2"]
+shape = SubResource("RectangleShape2D_odcde")

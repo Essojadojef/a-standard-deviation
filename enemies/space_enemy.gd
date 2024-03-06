@@ -13,6 +13,7 @@ var peak_level: float
 @export
 var color_shift: float = 0
 
+var velocity_field : float = 0
 
 func _process(delta: float) -> void:
 	#modulate = Color().from_hsv(clamp(shift + 1, 0, 2) / 3, 1.0 - base_level, peak_level)
@@ -26,7 +27,7 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y += gravity * delta
 	
-	var movement_speed = SPEED # * pow(2, color_shift)
+	var movement_speed = SPEED * pow(2, color_shift * velocity_field)
 	var rotation_speed = SPEED * pow(2, color_shift)
 	
 	# Get the input direction and handle the movement/deceleration.
@@ -39,12 +40,6 @@ func _physics_process(delta: float) -> void:
 	
 	var forw_vector = get_forward_vector()
 	var forw_vector_angle = forw_vector.angle()
-	
-	# formations
-	if formation == 1:
-		forw_vector_angle += (color_shift * 2 * PI / 12)
-	if formation == 2:
-		forw_vector_angle += (color_shift * 2 * TAU / 3)
 	
 	var angle = angle_difference(transform.y.angle() + PI, forw_vector_angle)
 	rotate(angle * 20 * delta)
@@ -61,9 +56,6 @@ func _draw() -> void:
 	draw_line(Vector2(), Vector2.UP * 1024, Color.WHITE)
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("commute_formation"):
-		formation = (formation + 1) % 3
-	
 	if event.is_action_pressed("action"):
 		shoot()
 

@@ -25,6 +25,14 @@ func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
 	
+	# Add the gravity.
+	if not is_on_floor():
+		velocity.y += gravity * delta
+
+	# Handle jump.
+	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
+
 	var movement_speed = SPEED * pow(2, color_shift * velocity_field)
 	var rotation_speed = SPEED * pow(2, color_shift)
 	
@@ -37,7 +45,7 @@ func _physics_process(delta: float) -> void:
 		velocity = velocity.move_toward(Vector2(), movement_speed)
 	
 	var forw_vector = (get_global_mouse_position() - global_position).normalized()
-	var forw_vector_angle = forw_vector.angle()
+	var forw_vector_angle = snapped(forw_vector.angle(), PI / 2)
 	
 	# formations
 	if formation == 1:
@@ -46,7 +54,21 @@ func _physics_process(delta: float) -> void:
 		forw_vector_angle += (color_shift * 2 * TAU / 3)
 	
 	var angle = angle_difference(transform.y.angle() + PI, forw_vector_angle)
-	rotate(angle * 20 * delta)
+	#rotate(angle * 20 * delta)
+	
+	match int(forw_vector_angle / PI * 2):
+		0:
+			$Sprite2D.frame = 2
+			$Sprite2D.flip_h = false
+		1:
+			$Sprite2D.frame = 0
+			$Sprite2D.flip_h = false
+		2, -2:
+			$Sprite2D.frame = 2
+			$Sprite2D.flip_h = true
+		-1:
+			$Sprite2D.frame = 3
+			$Sprite2D.flip_h = true
 	
 	"""forw_vector = lerp(-transform.y, forw_vector, .5).normalized()
 	
@@ -56,13 +78,7 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-func _draw() -> void:
-	draw_line(Vector2(), Vector2.UP * 1024, Color.WHITE)
-
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("commute_formation"):
-		formation = (formation + 1) % 3
-	
 	if event.is_action_pressed("action"):
 		shoot()
 

@@ -72,6 +72,11 @@ action={
 ]
 }
 
+[layer_names]
+
+2d_physics/layer_1="Entities"
+2d_physics/layer_2="Terrain"
+
 [physics]
 
 2d/default_gravity_vector=Vector2(0, 0)
