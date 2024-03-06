@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://cvnhklpy4d4am"]
+
+[ext_resource type="Script" path="res://spaceships/projectile.gd" id="1_whrpa"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_olvx1"]
+radius = 3.0
+
+[node name="Projectile" type="RigidBody2D"]
+use_parent_material = true
+collision_mask = 0
+script = ExtResource("1_whrpa")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_olvx1")
+
+[node name="DestroyTimer" type="Timer" parent="."]
+wait_time = 10.0
+autostart = true
+
+[connection signal="timeout" from="DestroyTimer" to="." method="_on_destroy_timer_timeout"]

@@ -1,4 +1,3 @@
-@tool
 extends CharacterBody2D
 
 const SPEED = 300.0
@@ -13,8 +12,6 @@ var base_level: float
 var peak_level: float
 @export
 var color_shift: float = 0
-@export
-var color_spectrum: Gradient
 
 var formation: int
 
@@ -31,7 +28,7 @@ func spawn_clones(n: int, spread: float):
 
 func _process(delta: float) -> void:
 	#modulate = Color().from_hsv(clamp(shift + 1, 0, 2) / 3, 1.0 - base_level, peak_level)
-	modulate = color_spectrum.sample(color_shift / 2 + .5)
+	modulate = Globals.color_spectrum.sample(color_shift / 2 + .5)
 
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
@@ -82,3 +79,17 @@ func _draw() -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("commute_formation"):
 		formation = (formation + 1) % 3
+	
+	if event.is_action_pressed("action"):
+		shoot()
+
+func shoot():
+	var projectile_scene = preload("res://spaceships/projectile.tscn")
+	var projectile = projectile_scene.instantiate()
+	projectile.color_shift = color_shift
+	projectile.position = position + get_forward_vector() * 16
+	projectile.linear_velocity = get_forward_vector() * 600
+	add_sibling(projectile)
+
+func get_forward_vector():
+	return -transform.y.normalized()

@@ -1,7 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://blae8gw2d70l3"]
+[gd_scene load_steps=5 format=3 uid="uid://blae8gw2d70l3"]
 
 [ext_resource type="Script" path="res://spaceships/spaceship.gd" id="1_ut0q0"]
-[ext_resource type="Gradient" uid="uid://b37nsfxbm2eef" path="res://color_spectrum.tres" id="2_eq32w"]
 [ext_resource type="Texture2D" uid="uid://cul88yj582qns" path="res://spaceships/spaceship_2.png" id="3_1u654"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_1utq4"]
@@ -11,12 +10,12 @@ blend_mode = 1
 radius = 8.0
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
-modulate = Color(0, 1, 0, 1)
+modulate = Color(0.435747, 0.5063, 1.92523e-07, 1)
 material = SubResource("CanvasItemMaterial_1utq4")
+use_parent_material = true
 collision_mask = 0
 motion_mode = 1
 script = ExtResource("1_ut0q0")
-color_spectrum = ExtResource("2_eq32w")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 use_parent_material = true
