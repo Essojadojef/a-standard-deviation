@@ -13,18 +13,7 @@ var peak_level: float
 @export
 var color_shift: float = 0
 
-var formation: int
 
-func _ready() -> void:
-	if color_shift == 0:
-		spawn_clones.call_deferred(3, 1)
-
-func spawn_clones(n: int, spread: float):
-	for i in range(1, n):
-		var shift: float = ceil(float(i) / 2) * (1 if i % 2 else -1)
-		var node = load("res://spaceships/ship.tscn").instantiate()
-		node.color_shift += shift * spread / 2
-		get_parent().add_child(node)
 
 func _process(delta: float) -> void:
 	#modulate = Color().from_hsv(clamp(shift + 1, 0, 2) / 3, 1.0 - base_level, peak_level)
