@@ -24,7 +24,7 @@ func spawn_clones(base_node: Node, n: int, spread: float):
 	Globals.clone_groups[clone_group_id].append(base_node)
 	Globals.nodes_clone_group[base_node] = clone_group_id
 	
-	var peak_level = 1.2 / pow(n, .5) # random formula but looks like it works
+	var peak_level = 2 / pow(n, .5) # random formula but looks like it works
 	# ideally when all the clones ovelap the sprite should be white-balanced
 	# (white should be white, colors with lower value should not clip)
 	base_node.peak_level = peak_level

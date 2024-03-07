@@ -7,7 +7,7 @@ var player_position: Vector2
 
 signal room_transition_finished(prev_room, direction)
 
-var color_spectrum: Gradient = preload("res://color_spectrum_oklab.tres")
+var color_spectrum: Gradient = preload("res://color_spectrum_rgb.tres")
 
 var bgm_player: = AudioStreamPlayer.new()
 
