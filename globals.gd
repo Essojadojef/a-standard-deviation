@@ -1,12 +1,27 @@
 extends Node
 
+# room transition
+
+var room_transition: bool = false
+var player_position: Vector2
+
+signal room_transition_finished(prev_room, direction)
+
 var color_spectrum: Gradient = preload("res://color_spectrum_oklab.tres")
+
+var bgm_player: = AudioStreamPlayer.new()
 
 var clone_groups: Dictionary
 var clone_spread: Dictionary
 var nodes_clone_group: Dictionary
 
 var process_groups: Array = ["player_spaceship"]
+
+func _ready() -> void:
+	add_child(bgm_player)
+	bgm_player.stream = preload("res://music/Seaside exploration r2.ogg")
+	bgm_player.bus = "BGM"
+	bgm_player.play()
 
 func _process(delta: float) -> void:
 	for i in process_groups:
