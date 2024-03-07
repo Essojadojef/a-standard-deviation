@@ -1,23 +1,23 @@
-[gd_scene load_steps=5 format=3 uid="uid://dubtfii158n3u"]
+[gd_scene load_steps=5 format=3 uid="uid://ddhc8oarlcbhp"]
 
-[ext_resource type="Script" path="res://enemies/space_enemy.gd" id="1_s8cbw"]
-[ext_resource type="Texture2D" uid="uid://igqgxgxqiwuc" path="res://enemies/space_enemy.png" id="3_utssp"]
+[ext_resource type="Script" path="res://enemies/crabbit.gd" id="1_oig0l"]
+[ext_resource type="Texture2D" uid="uid://d4mm8ejgbfd7p" path="res://enemies/crabbit.png" id="2_rl77m"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_1utq4"]
 blend_mode = 1
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1yeqw"]
-radius = 14.0
+radius = 16.0
 
-[node name="SpaceEnemy" type="CharacterBody2D"]
+[node name="Crabbit" type="CharacterBody2D"]
 material = SubResource("CanvasItemMaterial_1utq4")
 collision_mask = 0
 motion_mode = 1
-script = ExtResource("1_s8cbw")
+script = ExtResource("1_oig0l")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 use_parent_material = true
-texture = ExtResource("3_utssp")
+texture = ExtResource("2_rl77m")
 hframes = 2
 vframes = 2
 

@@ -29,6 +29,14 @@ window/stretch/mode="canvas_items"
 
 import/use_multiple_threads=false
 
+[file_customization]
+
+folder_colors={
+"res://characters/": "blue",
+"res://enemies/": "orange",
+"res://rooms/": "green"
+}
+
 [input]
 
 move_left={
