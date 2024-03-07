@@ -4,9 +4,9 @@
 [ext_resource type="PackedScene" uid="uid://blae8gw2d70l3" path="res://spaceships/ship.tscn" id="2_lxi0y"]
 [ext_resource type="PackedScene" uid="uid://dubtfii158n3u" path="res://enemies/space_enemy.tscn" id="3_s1gdp"]
 [ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.ogg" id="4_34p10"]
-[ext_resource type="Texture2D" uid="uid://cvbcj20m45txh" path="res://tiles.png" id="5_nqxko"]
+[ext_resource type="Texture2D" uid="uid://cvbcj20m45txh" path="res://rooms/tiles.png" id="5_nqxko"]
 [ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/frog.tscn" id="6_u4dq5"]
-[ext_resource type="Texture2D" uid="uid://c46xe3lvkl4gl" path="res://tiles_2.png" id="6_xkwgv"]
+[ext_resource type="Texture2D" uid="uid://c46xe3lvkl4gl" path="res://rooms/tiles_2.png" id="6_xkwgv"]
 [ext_resource type="Script" path="res://props/wall_mix_filter.gd" id="8_cvgiq"]
 [ext_resource type="Script" path="res://props/velocity_multiplier_field.gd" id="9_etmvo"]
 

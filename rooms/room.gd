@@ -1,4 +1,5 @@
 extends Node2D
+class_name Room
 
 @export
 var clone_multiplier: int = 7
