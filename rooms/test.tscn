@@ -1,11 +1,12 @@
-[gd_scene load_steps=14 format=3 uid="uid://ckf2xxh70s2f3"]
+[gd_scene load_steps=15 format=3 uid="uid://ckf2xxh70s2f3"]
 
-[ext_resource type="Script" path="res://spaceships/test.gd" id="1_6mgkh"]
+[ext_resource type="Script" path="res://rooms/room.gd" id="1_gc8p0"]
 [ext_resource type="PackedScene" uid="uid://blae8gw2d70l3" path="res://spaceships/ship.tscn" id="1_jhkp7"]
 [ext_resource type="PackedScene" uid="uid://dubtfii158n3u" path="res://enemies/space_enemy.tscn" id="3_8xppt"]
 [ext_resource type="Texture2D" uid="uid://cvbcj20m45txh" path="res://tiles.png" id="3_vtq3h"]
 [ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.ogg" id="4_mglmp"]
 [ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/frog.tscn" id="6_hvayh"]
+[ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/captain.tscn" id="7_2mjpk"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
 blend_mode = 1
@@ -81,12 +82,7 @@ size = Vector2(64, 64)
 
 [node name="Node2D2" type="Node2D"]
 material = SubResource("CanvasItemMaterial_328yp")
-script = ExtResource("1_6mgkh")
-
-[node name="PlayerSpaceship" parent="." instance=ExtResource("1_jhkp7")]
-
-[node name="SpaceEnemy" parent="." instance=ExtResource("3_8xppt")]
-position = Vector2(320, 128)
+script = ExtResource("1_gc8p0")
 
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_mglmp")
@@ -112,8 +108,17 @@ layer = -9
 color = Color(0, 0, 0, 0.501961)
 polygon = PackedVector2Array(0, 0, 0, 320, 512, 320, 512, 0)
 
+[node name="SpaceEnemy" parent="." instance=ExtResource("3_8xppt")]
+position = Vector2(320, 128)
+
+[node name="PlayerSpaceship" parent="." instance=ExtResource("1_jhkp7")]
+position = Vector2(64, 64)
+
 [node name="CharacterBody2D" parent="." instance=ExtResource("6_hvayh")]
 position = Vector2(128, 128)
+
+[node name="PlayerCharacterBody" parent="." instance=ExtResource("7_2mjpk")]
+position = Vector2(64, 128)
 
 [node name="Area2D" type="StaticBody2D" parent="."]
 position = Vector2(256, 192)

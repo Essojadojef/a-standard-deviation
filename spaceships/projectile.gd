@@ -9,6 +9,7 @@ var color_shift: float = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	add_to_group("hurtbox")
 	modulate = Globals.color_spectrum.sample(color_shift / 2 + .5)
 
 
@@ -22,3 +23,10 @@ func _draw() -> void:
 
 func _on_destroy_timer_timeout() -> void:
 	queue_free()
+
+func _on_hurtbox_body_entered(body: Node2D) -> void:
+	if body == self: return
+	
+	if body is CharacterBody2D and body.color_shift == color_shift:
+		body.velocity += linear_velocity
+		queue_free()

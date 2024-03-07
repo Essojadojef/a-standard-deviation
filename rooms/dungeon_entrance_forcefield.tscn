@@ -1,6 +1,6 @@
 [gd_scene load_steps=17 format=3 uid="uid://dpi778cmhtdoq"]
 
-[ext_resource type="Script" path="res://spaceships/test.gd" id="1_fdevg"]
+[ext_resource type="Script" path="res://rooms/room.gd" id="1_87xwf"]
 [ext_resource type="PackedScene" uid="uid://blae8gw2d70l3" path="res://spaceships/ship.tscn" id="2_lxi0y"]
 [ext_resource type="PackedScene" uid="uid://dubtfii158n3u" path="res://enemies/space_enemy.tscn" id="3_s1gdp"]
 [ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.ogg" id="4_34p10"]
@@ -56,7 +56,7 @@ size = Vector2(512, 64)
 
 [node name="Node2D" type="Node2D"]
 material = SubResource("CanvasItemMaterial_328yp")
-script = ExtResource("1_fdevg")
+script = ExtResource("1_87xwf")
 
 [node name="PlayerSpaceship" parent="." instance=ExtResource("2_lxi0y")]
 

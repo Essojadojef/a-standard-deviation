@@ -9,7 +9,7 @@ var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
 @export_range(0, 1)
 var base_level: float
 @export_range(0, 1)
-var peak_level: float
+var peak_level: float = 1
 @export
 var color_shift: float = 0
 
@@ -20,6 +20,7 @@ var formation: int
 func _process(delta: float) -> void:
 	#modulate = Color().from_hsv(clamp(shift + 1, 0, 2) / 3, 1.0 - base_level, peak_level)
 	modulate = Globals.color_spectrum.sample(color_shift / 2 + .5)
+	modulate *= peak_level
 
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():

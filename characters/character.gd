@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-const SPEED = 300.0
+const SPEED = 160.0
 const JUMP_VELOCITY = -400.0
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
@@ -9,30 +9,23 @@ var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
 @export_range(0, 1)
 var base_level: float
 @export_range(0, 1)
-var peak_level: float
+var peak_level: float = 1
 @export
 var color_shift: float = 0
 
 var velocity_field : float = 0
 
-var formation: int
+var forward_vector: Vector2
 
 func _process(delta: float) -> void:
 	#modulate = Color().from_hsv(clamp(shift + 1, 0, 2) / 3, 1.0 - base_level, peak_level)
 	modulate = Globals.color_spectrum.sample(color_shift / 2 + .5)
+	modulate *= peak_level
 
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
 	
-	# Add the gravity.
-	if not is_on_floor():
-		velocity.y += gravity * delta
-
-	# Handle jump.
-	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
-		velocity.y = JUMP_VELOCITY
-
 	var movement_speed = SPEED * pow(2, color_shift * velocity_field)
 	var rotation_speed = SPEED * pow(2, color_shift)
 	
@@ -41,20 +34,11 @@ func _physics_process(delta: float) -> void:
 	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	if direction:
 		velocity = direction * movement_speed
+		forward_vector = direction
 	else:
 		velocity = velocity.move_toward(Vector2(), movement_speed)
 	
-	var forw_vector = (get_global_mouse_position() - global_position).normalized()
-	var forw_vector_angle = snapped(forw_vector.angle(), PI / 2)
-	
-	# formations
-	if formation == 1:
-		forw_vector_angle += (color_shift * 2 * PI / 12)
-	if formation == 2:
-		forw_vector_angle += (color_shift * 2 * TAU / 3)
-	
-	var angle = angle_difference(transform.y.angle() + PI, forw_vector_angle)
-	#rotate(angle * 20 * delta)
+	var forw_vector_angle = snapped(forward_vector.angle(), PI / 2)
 	
 	match int(forw_vector_angle / PI * 2):
 		0:
@@ -77,18 +61,32 @@ func _physics_process(delta: float) -> void:
 	transform.x = right_vector"""
 
 	move_and_slide()
+	
+	if has_node("Hurtbox"):
+		process_attack()
+
+func process_attack():
+	$Hurtbox.position = forward_vector * 16
+	$Hurtbox.rotation = forward_vector.angle()
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("action"):
-		shoot()
+	if event.is_action_pressed("action") and has_node("Hurtbox"):
+		attack()
 
-func shoot():
-	var projectile_scene = preload("res://spaceships/projectile.tscn")
-	var projectile = projectile_scene.instantiate()
-	projectile.color_shift = color_shift
-	projectile.position = position + get_forward_vector() * 16
-	projectile.linear_velocity = get_forward_vector() * 600
-	add_sibling(projectile)
+func attack():
+	$Hurtbox.add_to_group("hurtbox")
+	$Hurtbox.show()
+	$Hurtbox.process_mode = Node.PROCESS_MODE_INHERIT
+	await get_tree().create_timer(.125, false).timeout
+	$Hurtbox.hide()
+	$Hurtbox.process_mode = Node.PROCESS_MODE_DISABLED
 
-func get_forward_vector():
-	return -transform.y.normalized()
+
+
+
+func _on_hurtbox_body_entered(body: Node2D) -> void:
+	if body == self: return
+	
+	if body is CharacterBody2D and body.color_shift == color_shift:
+		body.velocity += forward_vector * 600 * pow(2, color_shift)
+		#body.queue_free()

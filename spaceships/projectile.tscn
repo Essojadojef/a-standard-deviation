@@ -1,8 +1,11 @@
-[gd_scene load_steps=3 format=3 uid="uid://cvnhklpy4d4am"]
+[gd_scene load_steps=4 format=3 uid="uid://cvnhklpy4d4am"]
 
 [ext_resource type="Script" path="res://spaceships/projectile.gd" id="1_whrpa"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_olvx1"]
+radius = 3.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ifg72"]
 radius = 3.0
 
 [node name="Projectile" type="RigidBody2D"]
@@ -17,4 +20,10 @@ shape = SubResource("CircleShape2D_olvx1")
 wait_time = 10.0
 autostart = true
 
+[node name="Hurtbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("CircleShape2D_ifg72")
+
 [connection signal="timeout" from="DestroyTimer" to="." method="_on_destroy_timer_timeout"]
+[connection signal="body_entered" from="Hurtbox" to="." method="_on_hurtbox_body_entered"]
