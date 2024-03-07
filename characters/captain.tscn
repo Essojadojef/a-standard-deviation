@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://b8p265bg3n0ee"]
 
-[ext_resource type="Script" path="res://characters/character.gd" id="1_i64xe"]
+[ext_resource type="Script" path="res://characters/player_character.gd" id="1_td4vc"]
 [ext_resource type="Texture2D" uid="uid://cx2qjwnjbi22c" path="res://characters/captain.png" id="2_7id7j"]
 [ext_resource type="Texture2D" uid="uid://datcqhwov68g6" path="res://characters/hit.png" id="3_u7wjy"]
 
@@ -16,7 +16,7 @@ material = SubResource("CanvasItemMaterial_1utq4")
 use_parent_material = true
 collision_mask = 2
 motion_mode = 1
-script = ExtResource("1_i64xe")
+script = ExtResource("1_td4vc")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 use_parent_material = true

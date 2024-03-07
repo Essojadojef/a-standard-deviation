@@ -79,6 +79,7 @@ sources/1 = SubResource("TileSetAtlasSource_kge7x")
 [node name="Node2D2" type="Node2D"]
 material = SubResource("CanvasItemMaterial_328yp")
 script = SubResource("GDScript_4mv6m")
+clone_multiplier = 3
 
 [node name="TileMap" type="TileMap" parent="."]
 modulate = Color(0.501961, 0.501961, 0.501961, 1)

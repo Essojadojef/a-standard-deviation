@@ -14,10 +14,17 @@ var velocity_field : float = 0
 
 var forward_vector: Vector2
 
+var hitstun: float
+
+func _ready() -> void:
+	damage_received.connect(_on_damage_received)
+
 func _process(delta: float) -> void:
-	#modulate = Color().from_hsv(clamp(shift + 1, 0, 2) / 3, 1.0 - base_level, peak_level)
-	modulate = Globals.color_spectrum.sample(color_shift / 2 + .5)
-	modulate *= peak_level
+	modulate = (
+		Globals.color_spectrum.sample(color_shift / 2 + .5) *
+		(peak_level - base_level) +
+		Color.WHITE * base_level
+	)
 
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
@@ -26,9 +33,14 @@ func _physics_process(delta: float) -> void:
 	var movement_speed = SPEED * pow(2, color_shift * velocity_field)
 	var rotation_speed = SPEED * pow(2, color_shift)
 	
+	if hitstun:
+		hitstun = max(hitstun - delta, 0)
+		move_and_slide()
+		return
+	
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
-	var direction := Vector2()
+	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	if direction:
 		velocity = direction * movement_speed
 		forward_vector = direction
@@ -59,3 +71,33 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 	
+	process_attack()
+
+func process_attack():
+	$Hurtbox.position = forward_vector * 24
+	$Hurtbox.rotation = forward_vector.angle()
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("action") and has_node("Hurtbox"):
+		attack()
+
+func attack():
+	$Hurtbox.add_to_group("hurtbox")
+	$Hurtbox.show()
+	$Hurtbox.process_mode = Node.PROCESS_MODE_INHERIT
+	get_tree().create_timer(.125, false).timeout.connect(stop_attack)
+
+func stop_attack():
+	$Hurtbox.hide()
+	$Hurtbox.process_mode = Node.PROCESS_MODE_DISABLED
+
+func _on_hurtbox_body_entered(body: Node2D) -> void:
+	if body == self: return
+	
+	if body is CharacterBody2D and body.color_shift == color_shift:
+		body.damage_received.emit(forward_vector)
+
+func _on_damage_received(hit_direction: Vector2):
+	hitstun = .125
+	velocity = hit_direction * 300 * pow(2, color_shift * 1.5)
+	stop_attack()

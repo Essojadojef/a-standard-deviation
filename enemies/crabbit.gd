@@ -1,9 +1,6 @@
-extends CharacterBody2D
+extends Entity
 
 const SPEED = 300.0
-
-# Get the gravity from the project settings to be synced with RigidBody nodes.
-var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 @export_range(0, 1)
 var base_level: float
@@ -16,7 +13,10 @@ var velocity_field : float = 0
 
 var rng = RandomNumberGenerator.new()
 
+var hitstun: float
+
 func _ready() -> void:
+	damage_received.connect(_on_damage_received)
 	seed_rng()
 
 func seed_rng():
@@ -37,13 +37,13 @@ func _physics_process(delta: float) -> void:
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	
-	velocity = velocity.lerp(Vector2(), .5)
+	if hitstun:
+		hitstun = max(hitstun - delta, 0)
+		move_and_slide()
+		return
 	
-	if velocity.length() > 0:
-		jump_count = 0
-		seed_rng()
+	velocity = Vector2()
 	
-	move_and_slide()
 	
 	jump_timer -= delta
 	if jump_timer < 0:
@@ -73,8 +73,29 @@ func process_jump(delta: float):
 			setup_jump()
 
 func setup_jump():
+	seed_rng()
 	var viewport_size = get_viewport_rect().size
-	var target_location = viewport_size / 2 + Vector2.RIGHT.rotated(rng.randf() * TAU) * viewport_size / 2
+	var target_location = Vector2.RIGHT.rotated(rng.randf() * TAU)
+	target_location = target_location * viewport_size * .4 + viewport_size / 2
+	# target_location = random point in a circle, scaled to slightly less
+	# of half the viewport, centered around the middle of the viewport
 	jump_start_pos = position
 	jump_end_pos = position.move_toward(target_location, 64)
 	jump_phase = 0
+
+func _on_damage_received(hit_direction: Vector2):
+	hitstun = .125
+	velocity = hit_direction * 300 * pow(2, color_shift * 1.5)
+	jump_count = 0
+	seed_rng()
+	jump_timer = 0
+
+func _on_hurtbox_body_entered(body: Node2D) -> void:
+	if body == self: return
+	if body.scene_file_path != "res://characters/captain.tscn": return
+	if body.color_shift != color_shift: return
+	
+	if jump_count:
+		var movement: Vector2 = (jump_end_pos - jump_start_pos)
+		movement = Vector2.RIGHT.rotated(snapped(movement.angle(), PI / 4))
+		body.damage_received.emit(movement)
