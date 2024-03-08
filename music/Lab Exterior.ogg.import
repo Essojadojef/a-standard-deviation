@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://13wxqsl7mshh"
+path="res://.godot/imported/Lab Exterior.ogg-5f90a63e7e4d1c6fde2d490efe32aabd.oggvorbisstr"
+
+[deps]
+
+source_file="res://music/Lab Exterior.ogg"
+dest_files=["res://.godot/imported/Lab Exterior.ogg-5f90a63e7e4d1c6fde2d490efe32aabd.oggvorbisstr"]
+
+[params]
+
+loop=true
+loop_offset=0.0
+bpm=120.0
+beat_count=16
+bar_beats=4
