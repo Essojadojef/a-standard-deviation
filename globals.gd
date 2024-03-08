@@ -15,7 +15,7 @@ var clone_groups: Dictionary
 var clone_spread: Dictionary
 var nodes_clone_group: Dictionary
 
-var process_groups: Array = ["player_spaceship"]
+var process_groups: Array = ["player"]
 
 func _ready() -> void:
 	add_child(bgm_player)
