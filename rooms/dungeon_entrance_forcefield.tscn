@@ -1,17 +1,22 @@
-[gd_scene load_steps=17 format=3 uid="uid://dpi778cmhtdoq"]
+[gd_scene load_steps=14 format=3 uid="uid://dpi778cmhtdoq"]
 
-[ext_resource type="Script" path="res://rooms/room.gd" id="1_87xwf"]
-[ext_resource type="PackedScene" uid="uid://blae8gw2d70l3" path="res://spaceships/ship.tscn" id="2_lxi0y"]
-[ext_resource type="PackedScene" uid="uid://dubtfii158n3u" path="res://enemies/space_enemy.tscn" id="3_s1gdp"]
-[ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.ogg" id="4_34p10"]
+[ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/captain.tscn" id="4_6sxd1"]
 [ext_resource type="Texture2D" uid="uid://cvbcj20m45txh" path="res://rooms/tiles.png" id="5_nqxko"]
-[ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/frog.tscn" id="6_u4dq5"]
 [ext_resource type="Texture2D" uid="uid://c46xe3lvkl4gl" path="res://rooms/tiles_2.png" id="6_xkwgv"]
 [ext_resource type="Script" path="res://props/wall_mix_filter.gd" id="8_cvgiq"]
 [ext_resource type="Script" path="res://props/velocity_multiplier_field.gd" id="9_etmvo"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
 blend_mode = 1
+
+[sub_resource type="GDScript" id="GDScript_mod5g"]
+script/source = "extends Room
+
+func _ready() -> void:
+	Globals.bgm_player.stream = preload(\"res://music/Groovy Laboratory.ogg\")
+	Globals.bgm_player.play()
+	spawn_clones($PlayerCharacterBody, clone_multiplier, 1)
+"
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_cix1u"]
 tile_data = PackedInt32Array(0, 393217, 0, 65536, 393217, 1, 1, 458753, 0, 65537, 458753, 1)
@@ -56,17 +61,7 @@ size = Vector2(512, 64)
 
 [node name="Node2D" type="Node2D"]
 material = SubResource("CanvasItemMaterial_328yp")
-script = ExtResource("1_87xwf")
-
-[node name="PlayerSpaceship" parent="." instance=ExtResource("2_lxi0y")]
-
-[node name="SpaceEnemy" parent="." instance=ExtResource("3_s1gdp")]
-position = Vector2(320, 128)
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("4_34p10")
-autoplay = true
-bus = &"BGM"
+script = SubResource("GDScript_mod5g")
 
 [node name="TileMap" type="TileMap" parent="."]
 modulate = Color(0.501961, 0.501961, 0.501961, 1)
@@ -87,8 +82,8 @@ layer = -9
 color = Color(0, 0, 0, 0.501961)
 polygon = PackedVector2Array(0, 0, 0, 320, 512, 320, 512, 0)
 
-[node name="CharacterBody2D" parent="." instance=ExtResource("6_u4dq5")]
-position = Vector2(128, 128)
+[node name="PlayerCharacterBody" parent="." instance=ExtResource("4_6sxd1")]
+position = Vector2(256, 224)
 
 [node name="Area2D" type="StaticBody2D" parent="."]
 position = Vector2(256, 32)

@@ -5,7 +5,7 @@ class_name Room
 var clone_multiplier: int = 7
 
 # room transition
-var exit_direction = {
+var exit_transition_directions = {
 	SIDE_LEFT: Vector2.LEFT,
 	SIDE_TOP: Vector2.UP,
 	SIDE_RIGHT: Vector2.RIGHT,
@@ -58,6 +58,9 @@ func unspawn_clones(base_node: Node):
 
 const playable_area = Rect2(0, 0, 512, 288)
 
+func neighbour_rooms(side: int) -> String:
+	return scene_file_path
+
 func _process(delta: float) -> void:
 	process_room_transition()
 
@@ -86,3 +89,32 @@ func is_outside_room(node: Node2D) -> bool:
 
 func perform_room_transition(exit: int):
 	Globals.room_transition = true
+	var pan_direction: Vector2 = exit_transition_directions[exit]
+	
+	var player_character = $PlayerCharacterBody
+	unspawn_clones(player_character)
+	
+	var room_size = get_viewport_rect().size
+	var next_room = (load(neighbour_rooms(exit)) as PackedScene).instantiate()
+	add_sibling(next_room)
+	next_room.position = room_size * pan_direction * 2
+	
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(self, "position", -room_size * pan_direction * 2, 1)
+	$Camera2D.top_level = true
+	#tween.tween_property($Camera2D, "position", Vector2(room_size.x, 0), 1)
+	player_character.top_level = true
+	tween.tween_property(
+		player_character, "position",
+		player_character.position - room_size * pan_direction, 1
+	)
+	tween.tween_property(next_room, "position", Vector2(), 1)
+	
+	await tween.finished
+	
+	Globals.player_position = player_character.position
+	queue_free()
+	
+	Globals.room_transition = false
+	Globals.room_transition_finished.emit(scene_file_path)

@@ -1,9 +1,6 @@
-[gd_scene load_steps=16 format=3 uid="uid://b7deyngv27pt1"]
+[gd_scene load_steps=14 format=3 uid="uid://b7deyngv27pt1"]
 
-[ext_resource type="Script" path="res://rooms/room.gd" id="1_emxy3"]
-[ext_resource type="PackedScene" uid="uid://blae8gw2d70l3" path="res://spaceships/ship.tscn" id="2_fd7d2"]
 [ext_resource type="PackedScene" uid="uid://dubtfii158n3u" path="res://enemies/space_enemy.tscn" id="3_beq4o"]
-[ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.ogg" id="4_tg8e1"]
 [ext_resource type="Texture2D" uid="uid://cvbcj20m45txh" path="res://rooms/tiles.png" id="5_xsx6m"]
 [ext_resource type="Texture2D" uid="uid://c46xe3lvkl4gl" path="res://rooms/tiles_2.png" id="6_6o0th"]
 [ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/frog.tscn" id="7_1uu1i"]
@@ -12,6 +9,25 @@
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
 blend_mode = 1
+
+[sub_resource type="GDScript" id="GDScript_i52v7"]
+script/source = "extends Room
+
+func _ready() -> void:
+	Globals.bgm_player.stream = preload(\"res://music/Lab Exterior.ogg\")
+	Globals.bgm_player.play()
+	spawn_clones($SpaceEnemy, clone_multiplier, 1)
+	spawn_clones($CharacterBody2D, clone_multiplier, 1)
+	spawn_clones($PlayerCharacterBody, clone_multiplier, 1)
+
+func neighbour_rooms(side: int) -> String:
+	match side:
+		SIDE_LEFT:   return scene_file_path
+		SIDE_TOP:    return \"res://rooms/dungeon_entrance_forcefield.tscn\"
+		SIDE_RIGHT:  return scene_file_path
+		SIDE_BOTTOM: return \"res://rooms/seaside_2.tscn\"
+	return super.neighbour_rooms(side)
+"
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_cix1u"]
 tile_data = PackedInt32Array(0, 393217, 0, 65536, 393217, 1, 1, 458753, 0, 65537, 458753, 1)
@@ -53,17 +69,11 @@ size = Vector2(128, 32)
 
 [node name="Node2D" type="Node2D"]
 material = SubResource("CanvasItemMaterial_328yp")
-script = ExtResource("1_emxy3")
-
-[node name="PlayerSpaceship" parent="." instance=ExtResource("2_fd7d2")]
+script = SubResource("GDScript_i52v7")
+clone_multiplier = 3
 
 [node name="SpaceEnemy" parent="." instance=ExtResource("3_beq4o")]
 position = Vector2(320, 128)
-
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("4_tg8e1")
-autoplay = true
-bus = &"BGM"
 
 [node name="TileMap" type="TileMap" parent="."]
 modulate = Color(0.501961, 0.501961, 0.501961, 1)
