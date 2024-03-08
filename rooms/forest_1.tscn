@@ -1,0 +1,138 @@
+[gd_scene load_steps=9 format=3 uid="uid://cdrtyfieyq38f"]
+
+[ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="1_b6d70"]
+[ext_resource type="Script" path="res://props/velocity_multiplier_field.gd" id="4_4gn60"]
+[ext_resource type="PackedScene" uid="uid://vbxha1nqvftp" path="res://props/button.tscn" id="4_gqho0"]
+[ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/captain.tscn" id="4_jk17v"]
+[ext_resource type="Texture2D" uid="uid://drbr6ehnlxgl5" path="res://props/field_border.png" id="5_m3hkb"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
+blend_mode = 1
+
+[sub_resource type="GDScript" id="GDScript_4mv6m"]
+script/source = "extends Room
+
+var solved = false
+
+func _ready() -> void:
+	if Globals.room_transition:
+		await Globals.room_transition_finished
+		$PlayerCharacterBody.position = Globals.player_position
+	
+	spawn_clones($PlayerCharacterBody, clone_multiplier, 1)
+	
+	if solved:
+		unlock_door()
+		set_physics_process(false)
+
+func neighbour_rooms(side: int) -> String:
+	if side == SIDE_LEFT:
+		return \"res://rooms/seaside_1.tscn\"
+	return super.neighbour_rooms(side)
+
+func _physics_process(delta: float) -> void:
+	var buttons = [$Button, $Button2, $Button3, $Button4]
+	var solution = buttons.all(func(button): return button.pressed)
+	
+	if solution:
+		solved = true
+		unlock_door_anim()
+		set_physics_process(false)
+
+func unlock_door():
+	for x in range(14, 18):
+		$TileMap.erase_cell(0, Vector2i(x, 3))
+		$TileMap.erase_cell(0, Vector2i(x, 4))
+
+func unlock_door_anim():
+	for x in range(14, 18):
+		await get_tree().create_timer(.7).timeout
+		$TileMap.erase_cell(0, Vector2i(x, 3))
+		$TileMap.erase_cell(0, Vector2i(x, 4))
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_uwmd0"]
+size = Vector2(256, 32)
+
+[node name="Node2D2" type="Node2D"]
+material = SubResource("CanvasItemMaterial_328yp")
+script = SubResource("GDScript_4mv6m")
+clone_multiplier = 5
+
+[node name="TileMap" type="TileMap" parent="."]
+modulate = Color(0.501961, 0.501961, 0.501961, 1)
+z_index = -10
+z_as_relative = false
+tile_set = ExtResource("1_b6d70")
+collision_visibility_mode = 1
+format = 2
+layer_0/z_index = -10
+layer_0/tile_data = PackedInt32Array(-65512, 0, 0, -65513, 0, 0, 23, 0, 0, 22, 0, 0, 65557, 0, 0, 65558, 0, 0, 24, 0, 0, 65561, 0, 0, 26, 0, 0, 27, 0, 0, -65509, 0, 0, -65510, 0, 0, -131047, 0, 0, -131048, 0, 0, -131049, 0, 0, -196586, 0, 0, -196587, 0, 0, -131051, 0, 0, -65515, 0, 0, 21, 0, 0, 25, 0, 0, 28, 0, 0, 29, 0, 0, 30, 0, 0, 31, 0, 0, 32, 0, 0, 33, 0, 0, 34, 0, 0, 35, 0, 0, 36, 0, 0, 37, 0, 0, 65564, 0, 0, 131101, 0, 0, 131102, 0, 0, 131103, 0, 0, 131104, 0, 0, 131105, 0, 0, 65570, 0, 0, -65503, 0, 0, -65504, 0, 0, -65505, 0, 0, -65506, 0, 0, 65568, 0, 0, 65569, 0, 0, 65571, 0, 0, 65572, 0, 0, 65573, 0, 0, 65574, 0, 0, 131110, 0, 0, 131109, 0, 0, 196645, 0, 0, 196644, 0, 0, 262180, 0, 0, 262179, 0, 0, 196643, 0, 0, 131107, 0, 0, 262178, 0, 0, 720909, 65536, 0, 655373, 65536, 0, 655372, 65536, 0, 655371, 65536, 0, 589834, 65536, 0, 589833, 65536, 0, 524296, 65536, 0, 524295, 65536, 0, 458759, 65536, 0, 458758, 65536, 0, 458774, 65536, 0, 524310, 65536, 0, 589846, 65536, 0, 589845, 65536, 0, 655380, 65536, 0, 655379, 65536, 0, 655378, 65536, 0, 655377, 65536, 0, 720912, 65536, 0, 655387, 65536, 0, 589851, 65536, 0, 524315, 65536, 0, 458779, 65536, 0, 393244, 262146, 1, 393245, 65536, 0, 458781, 65536, 0, 524317, 65536, 0, 524318, 65536, 0, 589854, 65536, 0, 655390, 65536, 0, 786456, 65536, 0, 720919, 65536, 0, 720918, 65536, 0, 655381, 65536, 0, 589843, 65536, 0, 524306, 65536, 0, 524305, 65536, 0, 524304, 65536, 0, 458767, 65536, 0, 65551, 65536, 0, 15, 65536, 0, 16, 65536, 0, -65520, 65536, 0, -65519, 65536, 0, -131055, 65536, 0, -65521, 65536, 0, -65522, 65536, 0, 13, 65536, 0, 720902, 65536, 0, 720903, 65536, 0, 786439, 65536, 0, 655366, 65536, 0, 589829, 65536, 0, 589828, 65536, 0, 655365, 65536, 0, 720901, 65536, 0, 786462, 65536, 0, 786457, 65536, 0, 786452, 65536, 0, 720916, 65536, 0, 720917, 65536, 0, 655382, 65536, 0, 655383, 65536, 0, 458780, 65536, 0, 524316, 65536, 0, 589852, 65536, 0, 589853, 65536, 0, 589850, 65536, 0, 589849, 65536, 0, 524314, 65536, 0, 458778, 65536, 0, 983041, 0, 0, 851999, 0, 0, 983071, 0, 0, 1179647, 0, 0, 1114113, 0, 0, 1114117, 0, 0, 1114119, 0, 0, 1114133, 0, 0, 1114136, 0, 0, 1114143, 0, 0, 1114114, 0, 0, 196607, 0, 0, 0, 0, 0, 2, 0, 0, 65537, 0, 268435456, 3, 0, 268435456, 4, 0, 268435456, 131076, 0, 268435456, 131077, 0, 268435456, 131080, 0, 268435456, 7, 0, 268435456, 9, 0, 268435456, 5, 0, 0, 131075, 0, 0, 131081, 0, 0, 8, 0, 0, 10, 0, 268435456, 196609, 0, 268435456, 196608, 0, 0, 327680, 0, 0, 262146, 0, 0, 65542, 0, 0, 983040, 0, 0, 1048576, 0, 0, 1179650, 0, 0, 1048577, 0, 0, 983042, 0, 0, 1048578, 0, 0, 1048579, 0, 0, 1179653, 0, 0, 1048580, 0, 0, 1114112, 0, 0, 1179648, 0, 0, 1179646, 0, 0, 1114110, 0, 0, 1114111, 0, 0, 983038, 0, 0, 917502, 0, 0, 917534, 0, 0, 917533, 0, 0, 1048602, 0, 0, 1048603, 0, 0, 983068, 327682, 1, 917535, 0, 0, 917536, 0, 0, 852001, 0, 0, 852000, 0, 0, 1179668, 0, 0, 1179669, 0, 0, 1179670, 0, 0, 1179671, 0, 0, 1179672, 0, 0, 1179674, 0, 0, 1245210, 0, 0, 1245211, 0, 0, 1179682, 0, 0, 983076, 0, 0, 917540, 0, 0, 917538, 0, 0, 917537, 0, 0, 983072, 0, 0, 1048608, 0, 0, 1048607, 0, 0, 1179675, 0, 0, 1245207, 0, 0, 1048586, 0, 0, 1048585, 0, 0, 1048584, 0, 0, 1048583, 0, 0, 1179656, 0, 0, 1048582, 0, 0, 983046, 262146, 1, 983045, 327682, 1, 1114118, 0, 0, 1179654, 0, 0, 1179655, 0, 0, 917509, 327682, 0, 917508, 262146, 0, 983044, 262146, 1, 983043, 262146, 1, 917506, 0, 0, 1048606, 0, 0, 1114142, 0, 0, 1179677, 0, 0, 1114141, 0, 0, 1048599, 0, 0, 1048601, 0, 0, 917529, 327682, 0, 196636, 262146, 0, 262172, 262146, 1, 327708, 262146, 0, 196612, 327682, 0, 262148, 327682, 1, 196613, 327682, 0, 262149, 327682, 1, 196614, 262146, 0, 262150, 262146, 1, 196615, 327682, 0, 262151, 327682, 1, 196616, 262146, 0, 262152, 262146, 1, 196617, 327682, 0, 262153, 327682, 1, 196618, 262146, 0, 262154, 262146, 1, 196619, 327682, 0, 262155, 327682, 1, 327691, 65536, 0, 196620, 262146, 0, 262156, 262146, 1, 196621, 327682, 0, 262157, 327682, 1, 196611, 262146, 0, 262147, 262146, 1, 327683, 262146, 0, 393219, 262146, 1, 327688, 262146, 0, 393224, 262146, 1, 327690, 65536, 0, 393227, 65536, 0, 327693, 327682, 0, 393229, 327682, 1, 196626, 262146, 0, 262162, 262146, 1, 196627, 327682, 0, 262163, 327682, 1, 196628, 262146, 0, 262164, 262146, 1, 327700, 65536, 0, 196629, 327682, 0, 262165, 327682, 1, 196630, 262146, 0, 262166, 262146, 1, 196631, 327682, 0, 262167, 327682, 1, 327703, 327682, 0, 196632, 262146, 0, 262168, 262146, 1, 327704, 65536, 0, 196633, 327682, 0, 262169, 327682, 1, 196634, 262146, 0, 262170, 262146, 1, 196635, 327682, 0, 262171, 327682, 1, 327698, 262146, 0, 393234, 262146, 1, 327701, 65536, 0, 393239, 327682, 1, 327705, 65536, 0, 196622, 3, 0, 262158, 3, 0, 196623, 3, 0, 262159, 3, 0, 196624, 3, 0, 262160, 3, 0, 196625, 3, 0, 262161, 3, 0, 917510, 262146, 0, 917511, 327682, 0, 983047, 327682, 1, 917512, 262146, 0, 983048, 262146, 1, 917513, 327682, 0, 983049, 327682, 1, 917514, 262146, 0, 983050, 262146, 1, 917515, 327682, 0, 983051, 327682, 1, 917516, 262146, 0, 983052, 262146, 1, 917517, 327682, 0, 983053, 327682, 1, 917518, 262146, 0, 983054, 262146, 1, 917519, 327682, 0, 983055, 327682, 1, 917520, 262146, 0, 983056, 262146, 1, 917521, 327682, 0, 983057, 327682, 1, 917522, 262146, 0, 983058, 262146, 1, 917523, 327682, 0, 983059, 327682, 1, 917524, 262146, 0, 983060, 262146, 1, 917525, 327682, 0, 983061, 327682, 1, 917526, 262146, 0, 983062, 262146, 1, 917527, 327682, 0, 983063, 327682, 1, 917528, 262146, 0, 983064, 262146, 1, 983065, 327682, 1, 917530, 262146, 0, 983066, 262146, 1, 917531, 327682, 0, 983067, 327682, 1, 917532, 262146, 0, 917507, 262146, 1, 786435, 262146, 0, 851971, 327682, 1, 786460, 262146, 0, 851996, 262146, 0)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = -9
+
+[node name="Polygon2D" type="Polygon2D" parent="CanvasLayer"]
+color = Color(0, 0, 0, 0.501961)
+polygon = PackedVector2Array(0, 0, 0, 320, 512, 320, 512, 0)
+
+[node name="PlayerCharacterBody" parent="." instance=ExtResource("4_jk17v")]
+position = Vector2(64, 128)
+
+[node name="Button" parent="." instance=ExtResource("4_gqho0")]
+position = Vector2(96, 72)
+peak_level = 2.0
+color_shift = -0.5
+
+[node name="Button2" parent="." instance=ExtResource("4_gqho0")]
+position = Vector2(176, 72)
+peak_level = 2.0
+color_shift = -0.25
+
+[node name="Button3" parent="." instance=ExtResource("4_gqho0")]
+position = Vector2(336, 72)
+peak_level = 2.0
+color_shift = 0.25
+
+[node name="Button4" parent="." instance=ExtResource("4_gqho0")]
+position = Vector2(416, 72)
+peak_level = 2.0
+color_shift = 0.5
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(256, 208)
+script = ExtResource("4_4gn60")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_uwmd0")
+
+[node name="Sprite2D" type="Sprite2D" parent="Area2D/CollisionShape2D"]
+texture_repeat = 2
+position = Vector2(-128, 0)
+texture = ExtResource("5_m3hkb")
+region_enabled = true
+region_rect = Rect2(0, 0, 2, 32)
+
+[node name="Sprite2D2" type="Sprite2D" parent="Area2D/CollisionShape2D"]
+texture_repeat = 2
+position = Vector2(128, 0)
+texture = ExtResource("5_m3hkb")
+region_enabled = true
+region_rect = Rect2(62, 0, 2, 32)
+
+[node name="Sprite2D3" type="Sprite2D" parent="Area2D/CollisionShape2D"]
+texture_repeat = 2
+position = Vector2(0, -16)
+texture = ExtResource("5_m3hkb")
+region_enabled = true
+region_rect = Rect2(0, 0, 256, 2)
+
+[node name="Sprite2D4" type="Sprite2D" parent="Area2D/CollisionShape2D"]
+texture_repeat = 2
+position = Vector2(0, 16)
+texture = ExtResource("5_m3hkb")
+region_enabled = true
+region_rect = Rect2(0, 62, 256, 2)

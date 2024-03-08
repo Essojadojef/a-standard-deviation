@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://vbxha1nqvftp"]
+
+[ext_resource type="Script" path="res://props/button.gd" id="1_1h11s"]
+[ext_resource type="Texture2D" uid="uid://drjlktnbql7w3" path="res://props/button_n.png" id="2_78qjf"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_1utq4"]
+blend_mode = 1
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_n74dc"]
+radius = 8.0
+
+[node name="Button" type="CharacterBody2D"]
+material = SubResource("CanvasItemMaterial_1utq4")
+collision_mask = 0
+motion_mode = 1
+script = ExtResource("1_1h11s")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+use_parent_material = true
+texture = ExtResource("2_78qjf")
+hframes = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_n74dc")
+
+[node name="DepressTimer" type="Timer" parent="."]
+
+[connection signal="timeout" from="DepressTimer" to="." method="depress"]

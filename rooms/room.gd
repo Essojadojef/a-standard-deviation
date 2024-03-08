@@ -29,6 +29,7 @@ func spawn_clones(base_node: Node, n: int, spread: float):
 	# (white should be white, colors with lower value should not clip)
 	base_node.peak_level = peak_level
 	base_node.base_level = 0
+	setup_clone(base_node)
 	
 	for i in range(1, n):
 		var shift: float = ceil(float(i) / 2) * (1 if i % 2 else -1)
@@ -37,10 +38,14 @@ func spawn_clones(base_node: Node, n: int, spread: float):
 		node.peak_level = peak_level
 		node.name += "_%d" % i
 		add_child(node, true)
+		setup_clone(node)
 		
 		Globals.clone_groups[clone_group_id].append(node)
 		Globals.nodes_clone_group[base_node] = clone_group_id
 		
+
+func setup_clone(node):
+	pass
 
 func unspawn_clones(base_node: Node):
 	var clone_group_id: String = base_node.scene_file_path
