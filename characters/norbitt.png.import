@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://fw6v6wihkuqw"
-path="res://.godot/imported/frog_2.png-c7d9c1cc6ccf4cf9103614d1b92eb97e.ctex"
+uid="uid://crp5j8668yh3b"
+path="res://.godot/imported/norbitt.png-b6d85f78978abbb328caf3d488293dd7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://frog_2.png"
-dest_files=["res://.godot/imported/frog_2.png-c7d9c1cc6ccf4cf9103614d1b92eb97e.ctex"]
+source_file="res://characters/norbitt.png"
+dest_files=["res://.godot/imported/norbitt.png-b6d85f78978abbb328caf3d488293dd7.ctex"]
 
 [params]
 

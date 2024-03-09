@@ -16,6 +16,9 @@ var forward_vector: Vector2
 
 var hitstun: float
 
+var focus_color = false
+var focus_color_shift:float = 0
+
 func _ready() -> void:
 	damage_received.connect(_on_damage_received)
 
@@ -30,6 +33,8 @@ func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
 	
+	var player_control = !focus_color or color_shift == focus_color_shift
+	
 	var movement_speed = SPEED * pow(2, color_shift * velocity_field)
 	var rotation_speed = SPEED * pow(2, color_shift)
 	
@@ -41,7 +46,8 @@ func _physics_process(delta: float) -> void:
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	if direction:
+	
+	if direction and player_control:
 		velocity = direction * movement_speed
 		forward_vector = direction
 	else:
@@ -73,13 +79,36 @@ func _physics_process(delta: float) -> void:
 	
 	process_attack()
 
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("action"):
+		attack()
+	if event.is_action_pressed("commute_formation"):
+		focus_commute()
+
+func focus_commute():
+	var player_characters = get_tree().get_nodes_in_group("player")
+	var colors = player_characters.map(func(node): return node.color_shift)
+	colors.sort()
+	print(colors)
+	
+	if !focus_color:
+		focus_color = true
+		focus_color_shift = colors.front()
+		return
+	
+	if focus_color_shift == colors.back():
+		focus_color = false
+		return
+	
+	var current_index = colors.find(focus_color_shift)
+	assert(current_index > -1)
+	
+	focus_color_shift = colors[current_index + 1]
+	
+
 func process_attack():
 	$Hurtbox.position = forward_vector * 24
 	$Hurtbox.rotation = forward_vector.angle()
-
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("action") and has_node("Hurtbox"):
-		attack()
 
 func attack():
 	$Hurtbox.add_to_group("hurtbox")
