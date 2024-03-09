@@ -9,6 +9,8 @@ signal room_transition_finished(prev_room, direction)
 
 var color_spectrum: Gradient = preload("res://color_spectrum_rgb.tres")
 
+var gui = preload("res://gui.tscn").instantiate()
+
 var bgm_player: = AudioStreamPlayer.new()
 
 var clone_groups: Dictionary
@@ -18,6 +20,7 @@ var nodes_clone_group: Dictionary
 var process_groups: Array = ["player"]
 
 func _ready() -> void:
+	add_child(gui)
 	add_child(bgm_player)
 	bgm_player.stream = preload("res://music/Seaside exploration r2.ogg")
 	bgm_player.bus = "BGM"

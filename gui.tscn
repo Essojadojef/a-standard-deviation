@@ -1,0 +1,107 @@
+[gd_scene load_steps=5 format=3 uid="uid://qmv25xk5f7k0"]
+
+[ext_resource type="Texture2D" uid="uid://dgtnowigrvc0g" path="res://gui.png" id="1_r0ecg"]
+[ext_resource type="Script" path="res://gui_spectrum_indicator.gd" id="2_x3his"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hhe42"]
+atlas = ExtResource("1_r0ecg")
+region = Rect2(8, 8, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ikbqd"]
+atlas = ExtResource("1_r0ecg")
+region = Rect2(192, 0, 64, 64)
+
+[node name="CanvasLayer" type="CanvasLayer"]
+layer = 100
+
+[node name="Sprite2D" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="1" type="TextureRect" parent="Sprite2D"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 24.0
+offset_bottom = 24.0
+texture = SubResource("AtlasTexture_hhe42")
+
+[node name="2" type="TextureRect" parent="Sprite2D"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 8.0
+offset_right = 40.0
+offset_bottom = 24.0
+texture = SubResource("AtlasTexture_hhe42")
+
+[node name="3" type="TextureRect" parent="Sprite2D"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 8.0
+offset_right = 56.0
+offset_bottom = 24.0
+texture = SubResource("AtlasTexture_hhe42")
+
+[node name="4" type="TextureRect" parent="Sprite2D"]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 8.0
+offset_right = 72.0
+offset_bottom = 24.0
+texture = SubResource("AtlasTexture_hhe42")
+
+[node name="5" type="TextureRect" parent="Sprite2D"]
+layout_mode = 0
+offset_left = 72.0
+offset_top = 8.0
+offset_right = 88.0
+offset_bottom = 24.0
+texture = SubResource("AtlasTexture_hhe42")
+
+[node name="6" type="TextureRect" parent="Sprite2D"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 24.0
+offset_right = 24.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_hhe42")
+
+[node name="7" type="TextureRect" parent="Sprite2D"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_hhe42")
+
+[node name="8" type="TextureRect" parent="Sprite2D"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 24.0
+offset_right = 56.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_hhe42")
+
+[node name="9" type="TextureRect" parent="Sprite2D"]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 24.0
+offset_right = 72.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_hhe42")
+
+[node name="10" type="TextureRect" parent="Sprite2D"]
+layout_mode = 0
+offset_left = 72.0
+offset_top = 24.0
+offset_right = 88.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_hhe42")
+
+[node name="SpectrumIndicator" type="TextureRect" parent="."]
+offset_left = 448.0
+offset_right = 512.0
+offset_bottom = 64.0
+pivot_offset = Vector2(40.5, 23.5)
+texture = SubResource("AtlasTexture_ikbqd")
+script = ExtResource("2_x3his")
