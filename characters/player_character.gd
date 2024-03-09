@@ -113,17 +113,18 @@ func process_attack():
 func attack():
 	$Hurtbox.add_to_group("hurtbox")
 	$Hurtbox.show()
-	$Hurtbox.process_mode = Node.PROCESS_MODE_INHERIT
+	$Hurtbox/CollisionPolygon2D.disabled = false
 	get_tree().create_timer(.125, false).timeout.connect(stop_attack)
 
 func stop_attack():
 	$Hurtbox.hide()
-	$Hurtbox.process_mode = Node.PROCESS_MODE_DISABLED
+	$Hurtbox/CollisionPolygon2D.disabled = true
 
 func _on_hurtbox_body_entered(body: Node2D) -> void:
 	if body == self: return
 	
-	if body is CharacterBody2D and body.color_shift == color_shift:
+	print(abs(body.color_shift - color_shift))
+	if body is Entity and abs(body.color_shift - color_shift) < .1:
 		body.damage_received.emit(forward_vector)
 
 func _on_damage_received(hit_direction: Vector2):

@@ -92,10 +92,9 @@ func _on_damage_received(hit_direction: Vector2):
 
 func _on_hurtbox_body_entered(body: Node2D) -> void:
 	if body == self: return
-	if body.scene_file_path != "res://characters/captain.tscn": return
+	if !body.is_in_group("player"): return
 	if body.color_shift != color_shift: return
 	
 	if jump_count:
 		var movement: Vector2 = (jump_end_pos - jump_start_pos)
-		movement = Vector2.RIGHT.rotated(snapped(movement.angle(), PI / 4))
 		body.damage_received.emit(movement)

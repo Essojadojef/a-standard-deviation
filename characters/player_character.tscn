@@ -27,7 +27,6 @@ hframes = 4
 shape = SubResource("CapsuleShape2D_7p3un")
 
 [node name="Hurtbox" type="Area2D" parent="." groups=["hurtbox"]]
-process_mode = 4
 visible = false
 use_parent_material = true
 position = Vector2(16, 0)
@@ -39,5 +38,6 @@ texture = ExtResource("3_u7wjy")
 
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Hurtbox"]
 polygon = PackedVector2Array(-8, -8, 8, -2, 8, 2, -8, 8)
+disabled = true
 
 [connection signal="body_entered" from="Hurtbox" to="." method="_on_hurtbox_body_entered"]
