@@ -121,5 +121,6 @@ func perform_room_transition(exit: int):
 	Globals.player_position = player_character.position
 	queue_free()
 	
+	get_tree().current_scene = next_room
 	Globals.room_transition = false
 	Globals.room_transition_finished.emit(scene_file_path)

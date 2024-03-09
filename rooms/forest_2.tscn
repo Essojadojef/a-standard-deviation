@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://cu13liq4vrdxc"]
 
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="1_g43jf"]
-[ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/captain.tscn" id="2_f5piu"]
+[ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="2_f5piu"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
 blend_mode = 1

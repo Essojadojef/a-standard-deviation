@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://cvbcj20m45txh" path="res://rooms/tiles.png" id="3_vtq3h"]
 [ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.ogg" id="4_mglmp"]
 [ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/frog.tscn" id="6_hvayh"]
-[ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/captain.tscn" id="7_2mjpk"]
+[ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="7_2mjpk"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
 blend_mode = 1

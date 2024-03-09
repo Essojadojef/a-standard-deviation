@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://c46xe3lvkl4gl" path="res://rooms/tiles_2.png" id="6_6o0th"]
 [ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/frog.tscn" id="7_1uu1i"]
 [ext_resource type="Script" path="res://props/wall_mix_filter.gd" id="8_4go5q"]
-[ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/captain.tscn" id="9_2ymk1"]
+[ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="9_2ymk1"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
 blend_mode = 1

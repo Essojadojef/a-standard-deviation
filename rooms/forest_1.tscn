@@ -3,7 +3,7 @@
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="1_b6d70"]
 [ext_resource type="Script" path="res://props/velocity_multiplier_field.gd" id="4_4gn60"]
 [ext_resource type="PackedScene" uid="uid://vbxha1nqvftp" path="res://props/button.tscn" id="4_gqho0"]
-[ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/captain.tscn" id="4_jk17v"]
+[ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="4_jk17v"]
 [ext_resource type="PackedScene" uid="uid://8ie1utu4xcwt" path="res://props/rectangle_collision_shape_2d_textured.tscn" id="5_2hruu"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]

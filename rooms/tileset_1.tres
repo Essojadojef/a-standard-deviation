@@ -1,10 +1,11 @@
-[gd_resource type="TileSet" load_steps=11 format=3 uid="uid://cwh4yu13jthcs"]
+[gd_resource type="TileSet" load_steps=13 format=3 uid="uid://cwh4yu13jthcs"]
 
 [ext_resource type="Texture2D" uid="uid://cvbcj20m45txh" path="res://rooms/tiles.png" id="1_8xijq"]
 [ext_resource type="Texture2D" uid="uid://d13r7fhngmlla" path="res://rooms/tiles_sea.png" id="2_ud5yh"]
 [ext_resource type="Texture2D" uid="uid://kv2ly3ow0n3v" path="res://rooms/tiles_dungeon.png" id="3_mjmy8"]
 [ext_resource type="Texture2D" uid="uid://b255kjx0h4wpi" path="res://rooms/puzzle_door.png" id="4_m3osu"]
 [ext_resource type="Texture2D" uid="uid://c46xe3lvkl4gl" path="res://rooms/tiles_2.png" id="5_crtrn"]
+[ext_resource type="Texture2D" uid="uid://bu3mg7yy5173f" path="res://rooms/tiles_cave_gap.png" id="6_fbeq4"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vafml"]
 texture = ExtResource("1_8xijq")
@@ -204,9 +205,11 @@ texture = ExtResource("5_crtrn")
 5:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 5:0/0/physics_layer_0/angular_velocity = 0.0
 6:0/0 = 0
+6:0/0/modulate = Color(0.501961, 0.501961, 0.501961, 1)
 6:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 6:0/0/physics_layer_0/angular_velocity = 0.0
 7:0/0 = 0
+7:0/0/modulate = Color(0.501961, 0.501961, 0.501961, 1)
 7:0/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 7:0/0/physics_layer_0/angular_velocity = 0.0
 0:1/0 = 0
@@ -228,11 +231,64 @@ texture = ExtResource("5_crtrn")
 5:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 5:1/0/physics_layer_0/angular_velocity = 0.0
 6:1/0 = 0
+6:1/0/modulate = Color(0.501961, 0.501961, 0.501961, 1)
 6:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 6:1/0/physics_layer_0/angular_velocity = 0.0
 7:1/0 = 0
+7:1/0/modulate = Color(0.501961, 0.501961, 0.501961, 1)
 7:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
 7:1/0/physics_layer_0/angular_velocity = 0.0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5ceau"]
+texture = ExtResource("6_fbeq4")
+0:1/0 = 0
+0:1/0/modulate = Color(0.729412, 0.501961, 0.380392, 1)
+0:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:1/0/physics_layer_0/angular_velocity = 0.0
+1:1/0 = 0
+1:1/0/modulate = Color(0.729412, 0.501961, 0.380392, 1)
+1:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+1:1/0/physics_layer_0/angular_velocity = 0.0
+2:1/0 = 0
+2:1/0/modulate = Color(0.729412, 0.501961, 0.380392, 1)
+2:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+2:1/0/physics_layer_0/angular_velocity = 0.0
+3:1/0 = 0
+3:1/0/modulate = Color(0.729412, 0.501961, 0.380392, 1)
+3:1/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+3:1/0/physics_layer_0/angular_velocity = 0.0
+0:2/0 = 0
+0:2/0/modulate = Color(0.729412, 0.501961, 0.380392, 1)
+0:2/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:2/0/physics_layer_0/angular_velocity = 0.0
+1:2/0 = 0
+1:2/0/modulate = Color(0.729412, 0.501961, 0.380392, 1)
+1:2/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+1:2/0/physics_layer_0/angular_velocity = 0.0
+2:2/0 = 0
+2:2/0/modulate = Color(0.729412, 0.501961, 0.380392, 1)
+2:2/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+2:2/0/physics_layer_0/angular_velocity = 0.0
+3:2/0 = 0
+3:2/0/modulate = Color(0.729412, 0.501961, 0.380392, 1)
+3:2/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+3:2/0/physics_layer_0/angular_velocity = 0.0
+0:3/0 = 0
+0:3/0/modulate = Color(0.729412, 0.501961, 0.380392, 1)
+0:3/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+0:3/0/physics_layer_0/angular_velocity = 0.0
+1:3/0 = 0
+1:3/0/modulate = Color(0.729412, 0.501961, 0.380392, 1)
+1:3/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+1:3/0/physics_layer_0/angular_velocity = 0.0
+2:3/0 = 0
+2:3/0/modulate = Color(0.729412, 0.501961, 0.380392, 1)
+2:3/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+2:3/0/physics_layer_0/angular_velocity = 0.0
+3:3/0 = 0
+3:3/0/modulate = Color(0.729412, 0.501961, 0.380392, 1)
+3:3/0/physics_layer_0/linear_velocity = Vector2(0, 0)
+3:3/0/physics_layer_0/angular_velocity = 0.0
 
 [resource]
 physics_layer_0/collision_layer = 2
@@ -242,3 +298,4 @@ sources/1 = SubResource("TileSetAtlasSource_kge7x")
 sources/2 = SubResource("TileSetAtlasSource_c4n8e")
 sources/3 = SubResource("TileSetAtlasSource_c1v83")
 sources/4 = SubResource("TileSetAtlasSource_y33m7")
+sources/5 = SubResource("TileSetAtlasSource_5ceau")
