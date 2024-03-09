@@ -15,16 +15,18 @@ script/source = "extends Room
 func _ready() -> void:
 	if Globals.room_transition:
 		await Globals.room_transition_finished
+		$PlayerCharacterBody.position = Globals.player_position
 	
 	spawn_clones($Crabbit, clone_multiplier, 1)
 	spawn_clones($Crabbit2, clone_multiplier, 1)
 	spawn_clones($CharacterBody2D, clone_multiplier, 1)
-	$PlayerCharacterBody.position = Globals.player_position
 	spawn_clones($PlayerCharacterBody, clone_multiplier, 1)
 
 func neighbour_rooms(side: int) -> String:
 	if side == SIDE_LEFT:
 		return \"res://rooms/seaside_1.tscn\"
+	if side == SIDE_TOP:
+		return \"res://rooms/forest_2.tscn\"
 	return super.neighbour_rooms(side)
 "
 

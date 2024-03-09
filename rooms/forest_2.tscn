@@ -21,6 +21,9 @@ func _ready() -> void:
 	
 
 func neighbour_rooms(side: int) -> String:
+	match side:
+		SIDE_TOP: return \"res://rooms/dungeon_entrance_forcefield.tscn\"
+		SIDE_BOTTOM: return \"res://rooms/seaside_2.tscn\"
 	return super.neighbour_rooms(side)
 
 func setup_clone(node: Node2D):

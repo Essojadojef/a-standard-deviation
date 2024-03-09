@@ -1,10 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://cdrtyfieyq38f"]
+[gd_scene load_steps=8 format=3 uid="uid://cdrtyfieyq38f"]
 
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="1_b6d70"]
 [ext_resource type="Script" path="res://props/velocity_multiplier_field.gd" id="4_4gn60"]
 [ext_resource type="PackedScene" uid="uid://vbxha1nqvftp" path="res://props/button.tscn" id="4_gqho0"]
 [ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/captain.tscn" id="4_jk17v"]
-[ext_resource type="Texture2D" uid="uid://drbr6ehnlxgl5" path="res://props/field_border.png" id="5_m3hkb"]
+[ext_resource type="PackedScene" uid="uid://8ie1utu4xcwt" path="res://props/rectangle_collision_shape_2d_textured.tscn" id="5_2hruu"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
 blend_mode = 1
@@ -50,9 +50,6 @@ func unlock_door_anim():
 		$TileMap.erase_cell(0, Vector2i(x, 3))
 		$TileMap.erase_cell(0, Vector2i(x, 4))
 "
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_uwmd0"]
-size = Vector2(256, 32)
 
 [node name="Node2D2" type="Node2D"]
 material = SubResource("CanvasItemMaterial_328yp")
@@ -106,33 +103,4 @@ color_shift = 0.5
 position = Vector2(256, 208)
 script = ExtResource("4_4gn60")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-shape = SubResource("RectangleShape2D_uwmd0")
-
-[node name="Sprite2D" type="Sprite2D" parent="Area2D/CollisionShape2D"]
-texture_repeat = 2
-position = Vector2(-128, 0)
-texture = ExtResource("5_m3hkb")
-region_enabled = true
-region_rect = Rect2(0, 0, 2, 32)
-
-[node name="Sprite2D2" type="Sprite2D" parent="Area2D/CollisionShape2D"]
-texture_repeat = 2
-position = Vector2(128, 0)
-texture = ExtResource("5_m3hkb")
-region_enabled = true
-region_rect = Rect2(62, 0, 2, 32)
-
-[node name="Sprite2D3" type="Sprite2D" parent="Area2D/CollisionShape2D"]
-texture_repeat = 2
-position = Vector2(0, -16)
-texture = ExtResource("5_m3hkb")
-region_enabled = true
-region_rect = Rect2(0, 0, 256, 2)
-
-[node name="Sprite2D4" type="Sprite2D" parent="Area2D/CollisionShape2D"]
-texture_repeat = 2
-position = Vector2(0, 16)
-texture = ExtResource("5_m3hkb")
-region_enabled = true
-region_rect = Rect2(0, 62, 256, 2)
+[node name="CollisionShape2D" parent="Area2D" instance=ExtResource("5_2hruu")]

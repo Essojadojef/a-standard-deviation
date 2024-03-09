@@ -12,9 +12,15 @@ blend_mode = 1
 script/source = "extends Room
 
 func _ready() -> void:
-	Globals.bgm_player.stream = preload(\"res://music/Groovy Laboratory.ogg\")
+	Globals.bgm_player.stream = preload(\"res://music/Lab Exterior.ogg\")
 	Globals.bgm_player.play()
 	spawn_clones($PlayerCharacterBody, clone_multiplier, 1)
+
+func neighbour_rooms(side: int) -> String:
+	match side:
+		SIDE_TOP: return scene_file_path
+		SIDE_BOTTOM: return \"res://rooms/dungeon_entrance_forcefield.tscn\"
+	return super.neighbour_rooms(side)
 "
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_cix1u"]
