@@ -1,9 +1,4 @@
-extends CharacterBody2D
-
-const SPEED = 300.0
-
-# Get the gravity from the project settings to be synced with RigidBody nodes.
-var gravity: int = ProjectSettings.get_setting("physics/2d/default_gravity")
+extends Entity
 
 @export_range(0, 1)
 var base_level: float
@@ -14,8 +9,12 @@ var color_shift: float = 0
 
 var velocity_field : float = 0
 
+var hitstun:float
+
+func _ready() -> void:
+	damage_received.connect(_on_damage_received)
+
 func _process(delta: float) -> void:
-	#modulate = Color().from_hsv(clamp(shift + 1, 0, 2) / 3, 1.0 - base_level, peak_level)
 	modulate = Globals.color_spectrum.sample(color_shift / 2 + .5)
 	modulate.a = peak_level
 
@@ -23,19 +22,20 @@ func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
 	
-	var movement_speed = SPEED * pow(2, color_shift * velocity_field)
-	var rotation_speed = SPEED * pow(2, color_shift)
+	if hitstun:
+		hitstun = max(hitstun - delta, 0)
+		move_and_slide()
+		return
 	
-	# Get the input direction and handle the movement/deceleration.
-	# As good practice, you should replace UI actions with custom gameplay actions.
-	var direction
-	if direction:
-		velocity = direction * movement_speed
-	else:
-		velocity = velocity.lerp(Vector2(), .2)
+	var grid_aligned_position = position.snapped(Vector2.ONE * 32)
+	var error = grid_aligned_position - position
+	velocity = velocity.lerp(Vector2(), .3) + error * .2
 
 	move_and_slide()
 
-func _draw() -> void:
-	draw_line(Vector2(), Vector2.UP * 1024, Color.WHITE)
-
+func _on_damage_received(hit_direction: Vector2):
+	hitstun = .125
+	#hit_direction = Vector2.RIGHT.rotated(snapped(hit_direction.angle(), PI / 4)) # only + or x movement
+	hit_direction = hit_direction.rotated(color_shift * PI * .33)
+	#velocity = hit_direction.normalized() * (600 * ease(color_shift + .5, -2) + 100)
+	velocity = hit_direction.normalized() * (500 * pow(cos(PI * color_shift), 1.5) + 200)
