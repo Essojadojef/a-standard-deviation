@@ -97,4 +97,4 @@ func _on_hurtbox_body_entered(body: Node2D) -> void:
 	
 	if jump_count:
 		var movement: Vector2 = (jump_end_pos - jump_start_pos)
-		body.damage_received.emit(movement)
+		body.damage_received.emit(movement.normalized())

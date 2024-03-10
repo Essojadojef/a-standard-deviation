@@ -54,8 +54,8 @@ func unspawn_clones(base_node: Node):
 	base_node.color_shift = 0
 	base_node.base_level = 1
 	
-	for i in Globals.clone_groups[clone_group_id]:
-		if i == base_node:
+	for i in get_children():
+		if !(i is Entity) or i == base_node:
 			continue
 		
 		remove_child(i)
@@ -78,29 +78,33 @@ func process_room_transition() -> void:
 	if player_nodes_outside_room.is_empty():
 		return
 	
-	var exit_position = player_nodes_outside_room.pick_random().position
+	perform_room_transition(player_nodes_outside_room.pick_random())
 	
-	if exit_position.x < 0:
-		perform_room_transition(SIDE_LEFT)
-	if exit_position.y < 0:
-		perform_room_transition(SIDE_TOP)
-	if exit_position.x > playable_area.size.x:
-		perform_room_transition(SIDE_RIGHT)
-	if exit_position.y > playable_area.size.y:
-		perform_room_transition(SIDE_BOTTOM)
 
 func is_outside_room(node: Node2D) -> bool:
 	return !playable_area.has_point(node.position)
 
-func perform_room_transition(exit: int):
+func perform_room_transition(room_transition_character: Entity):
 	Globals.room_transition = true
+	
+	var exit: int
+	if room_transition_character.position.x < 0:
+		exit = SIDE_LEFT
+	if room_transition_character.position.y < 0:
+		exit = (SIDE_TOP)
+	if room_transition_character.position.x > playable_area.size.x:
+		exit = (SIDE_RIGHT)
+	if room_transition_character.position.y > playable_area.size.y:
+		exit = (SIDE_BOTTOM)
+	
 	var pan_direction: Vector2 = exit_transition_directions[exit]
 	
-	var player_character = $PlayerCharacterBody
-	unspawn_clones(player_character)
+	unspawn_clones(room_transition_character)
 	
 	var room_size = get_viewport_rect().size
-	var next_room = (load(neighbour_rooms(exit)) as PackedScene).instantiate()
+	var next_room_scene: PackedScene = load(neighbour_rooms(exit))
+	assert(next_room_scene, "error loading file " + neighbour_rooms(exit))
+	var next_room = next_room_scene.instantiate()
 	add_sibling(next_room)
 	next_room.position = room_size * pan_direction * 2
 	
@@ -109,16 +113,16 @@ func perform_room_transition(exit: int):
 	tween.tween_property(self, "position", -room_size * pan_direction * 2, 1)
 	$Camera2D.top_level = true
 	#tween.tween_property($Camera2D, "position", Vector2(room_size.x, 0), 1)
-	player_character.top_level = true
+	room_transition_character.top_level = true
 	tween.tween_property(
-		player_character, "position",
-		player_character.position - room_size * pan_direction, 1
+		room_transition_character, "position",
+		room_transition_character.position - room_size * pan_direction, 1
 	)
 	tween.tween_property(next_room, "position", Vector2(), 1)
 	
 	await tween.finished
 	
-	Globals.player_position = player_character.position
+	Globals.player_position = room_transition_character.position
 	queue_free()
 	
 	get_tree().current_scene = next_room
