@@ -1,7 +1,7 @@
 extends Area2D
 
 @export
-var filter_color: bool = false
+var filter_color: bool = true
 
 @export_range(0, 1)
 var peak_level: float = 1

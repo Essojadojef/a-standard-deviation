@@ -1,7 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://qmv25xk5f7k0"]
+[gd_scene load_steps=11 format=3 uid="uid://qmv25xk5f7k0"]
 
+[ext_resource type="Script" path="res://gui.gd" id="1_h60fh"]
 [ext_resource type="Texture2D" uid="uid://dgtnowigrvc0g" path="res://gui.png" id="1_r0ecg"]
 [ext_resource type="Script" path="res://gui_spectrum_indicator.gd" id="2_x3his"]
+[ext_resource type="PackedScene" uid="uid://m1bpjr0ph3ji" path="res://waves.tscn" id="3_3v3s7"]
+[ext_resource type="Shader" path="res://waves.gdshader" id="5_2pohc"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hhe42"]
 atlas = ExtResource("1_r0ecg")
@@ -11,8 +14,32 @@ region = Rect2(8, 8, 16, 16)
 atlas = ExtResource("1_r0ecg")
 region = Rect2(192, 0, 64, 64)
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_568df"]
+noise_type = 3
+seed = 190
+frequency = 0.3996
+fractal_type = 0
+fractal_octaves = 1
+metadata/_preview_in_3d_space_ = true
+
+[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_ornw8"]
+seamless = true
+seamless_blend_skirt = 0.5
+noise = SubResource("FastNoiseLite_568df")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hd6nv"]
+resource_local_to_scene = true
+shader = ExtResource("5_2pohc")
+shader_parameter/origin = Vector2(0.5, 0.5)
+shader_parameter/anim_speed = 30.0
+shader_parameter/anim_duration = 2.0
+shader_parameter/time_scale = 0.0
+shader_parameter/modulate = Color(0, 1, 0, 1)
+shader_parameter/noise = SubResource("NoiseTexture3D_ornw8")
+
 [node name="CanvasLayer" type="CanvasLayer"]
 layer = 100
+script = ExtResource("1_h60fh")
 
 [node name="Sprite2D" type="Control" parent="."]
 layout_mode = 3
@@ -105,3 +132,10 @@ offset_bottom = 64.0
 pivot_offset = Vector2(40.5, 23.5)
 texture = SubResource("AtlasTexture_ikbqd")
 script = ExtResource("2_x3his")
+
+[node name="Waves" parent="." instance=ExtResource("3_3v3s7")]
+process_mode = 3
+material = SubResource("ShaderMaterial_hd6nv")
+polygon = PackedVector2Array(0, 0, 512, 0, 512, 288, 0, 288)
+
+[editable path="Waves"]

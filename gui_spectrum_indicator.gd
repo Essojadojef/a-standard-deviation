@@ -10,11 +10,10 @@ func _draw() -> void:
 	else:
 		return
 	
-	var player_character = get_tree().get_nodes_in_group("player").front()
-	var focus_indicator = (
-		player_character.focus_color_shift / 2 + .5 if player_character.focus_color else
-		-2
-	)
+	var focus_indicator: float = -2
+	var player_characters: Array = get_tree().get_nodes_in_group("player")
+	if player_characters and player_characters.front().focus_color:
+		focus_indicator = player_characters.front().focus_color_shift / 2 + .5
 	
 	for i in current_room.clone_multiplier:
 		draw_point(current_room.clone_multiplier, i, focus_indicator)

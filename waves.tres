@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://c07gxaqwxcsj"]
+
+[ext_resource type="Shader" path="res://waves.gdshader" id="1_pj6l0"]
+
+[resource]
+resource_local_to_scene = true
+shader = ExtResource("1_pj6l0")
+shader_parameter/origin = Vector2(0.5, 0.5)
+shader_parameter/anim_speed = 10.0
+shader_parameter/anim_duration = 2.0
+shader_parameter/time_scale = 0.0
+shader_parameter/time_offset = 0.0
+shader_parameter/modulate = Color(1, 1, 1, 1)

@@ -19,8 +19,11 @@ var hitstun: float
 var focus_color = false
 var focus_color_shift:float = 0
 
+signal defeated()
+
 func _ready() -> void:
 	damage_received.connect(_on_damage_received)
+	defeated.connect(Globals.gui._on_player_character_defeated.bind(self))
 
 func _process(delta: float) -> void:
 	modulate = (

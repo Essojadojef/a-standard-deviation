@@ -24,6 +24,7 @@ texture = ExtResource("2_gn5mp")
 hframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 8)
 shape = SubResource("CapsuleShape2D_7p3un")
 
 [node name="Hurtbox" type="Area2D" parent="." groups=["hurtbox"]]
