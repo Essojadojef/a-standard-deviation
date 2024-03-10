@@ -1,0 +1,449 @@
+[gd_scene load_steps=11 format=3 uid="uid://nw3rr5nhregj"]
+
+[ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="1_f7xdx"]
+[ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="2_dnc7d"]
+[ext_resource type="Script" path="res://props/death_area.gd" id="3_0a2sj"]
+[ext_resource type="Script" path="res://props/sprite_rect.gd" id="3_fy5d5"]
+[ext_resource type="Texture2D" uid="uid://4o0rl06es02i" path="res://props/spike_filter.png" id="5_45gh5"]
+[ext_resource type="PackedScene" uid="uid://cearwdot6cpky" path="res://props/pressure_plate.tscn" id="5_nxsdi"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
+blend_mode = 1
+
+[sub_resource type="GDScript" id="GDScript_4mv6m"]
+script/source = "extends Room
+
+var solved = false
+
+func _ready() -> void:
+	Globals.bgm_player.stream = preload(\"res://music/Groovy Laboratory.ogg\")
+	Globals.bgm_player.play()
+	
+	if Globals.room_transition:
+		await Globals.room_transition_finished
+		$PlayerCharacterBody.position = Globals.player_position
+	
+	spawn_clones($PlayerCharacterBody, clone_multiplier, 1)
+	
+
+func neighbour_rooms(side: int) -> String:
+	match side:
+		SIDE_TOP: return \"res://rooms/dungeon_entrance_forcefield.tscn\"
+		SIDE_BOTTOM: return \"res://rooms/seaside_2.tscn\"
+	return super.neighbour_rooms(side)
+
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pvw5b"]
+size = Vector2(64, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_prvs7"]
+size = Vector2(16, 64)
+
+[node name="Node2D2" type="Node2D"]
+material = SubResource("CanvasItemMaterial_328yp")
+script = SubResource("GDScript_4mv6m")
+clone_multiplier = 5
+
+[node name="TileMap" type="TileMap" parent="."]
+modulate = Color(0.501961, 0.501961, 0.501961, 1)
+z_index = -10
+z_as_relative = false
+tile_set = ExtResource("1_f7xdx")
+format = 2
+layer_0/z_index = -10
+layer_0/tile_data = PackedInt32Array(-65513, 0, 0, 23, 0, 0, 22, 0, 0, 65557, 327682, 0, 65558, 327682, 1, -131047, 0, 0, -131048, 0, 0, -131049, 0, 0, -131051, 0, 0, -65515, 0, 0, 21, 0, 0, 30, 0, 0, 31, 0, 0, 32, 0, 0, 33, 0, 0, 131103, 0, 0, 131104, 0, 0, 131105, 0, 0, 65570, 0, 0, -65503, 0, 0, -65504, 0, 0, -65505, 0, 0, -65506, 0, 0, 65568, 0, 0, 65569, 0, 0, 262178, 0, 0, 720909, 327682, 0, 655373, 65536, 0, 655372, 65536, 0, 589834, 65536, 0, 458759, 65536, 0, 458758, 65536, 0, 458774, 65536, 0, 524310, 65536, 0, 655380, 65536, 0, 655379, 65536, 0, 655378, 65536, 0, 655377, 65536, 0, 655387, 65536, 0, 458779, 65536, 0, 524318, 65536, 0, 524304, 65536, 0, 458767, 65536, 0, 65551, 327682, 0, -65519, 65536, 0, -131055, 65536, 0, 13, 65536, 0, 720902, 65536, 0, 589829, 65536, 0, 589828, 65536, 0, 786462, 65536, 0, 720917, 65536, 0, 458778, 65536, 0, 851999, 0, 0, 983071, 0, 0, 1179647, 0, 0, 1114113, 0, 0, 1114117, 0, 0, 1114119, 0, 0, 1114133, 0, 0, 1114136, 0, 0, 1114143, 0, 0, 1114114, 0, 0, 196607, 0, 0, 0, 0, 0, 2, 0, 0, 65537, 0, 268435456, 3, 0, 268435456, 4, 0, 268435456, 7, 0, 268435456, 9, 0, 268435456, 5, 0, 0, 131075, 327682, 0, 8, 0, 0, 10, 0, 268435456, 196609, 0, 268435456, 196608, 0, 0, 327680, 0, 0, 65542, 262146, 1, 1048576, 0, 0, 1179650, 0, 0, 1048577, 0, 0, 1048578, 0, 0, 1179653, 0, 0, 1048580, 327682, 1, 1114112, 0, 0, 1179648, 0, 0, 1179646, 0, 0, 1114110, 0, 0, 1114111, 0, 0, 917534, 0, 0, 917533, 327682, 1, 1048602, 262146, 0, 1048603, 262146, 1, 917535, 0, 0, 917536, 0, 0, 852001, 0, 0, 852000, 0, 0, 1179668, 0, 0, 1179669, 0, 0, 1179670, 0, 0, 1179671, 0, 0, 1179672, 0, 0, 1179674, 0, 0, 1245210, 0, 0, 1245211, 0, 0, 917537, 0, 0, 983072, 0, 0, 1048608, 0, 0, 1048607, 0, 0, 1179675, 0, 0, 1245207, 0, 0, 1048586, 327682, 0, 1048585, 262146, 1, 1048584, 262146, 1, 1048583, 327682, 1, 1179656, 0, 0, 1048582, 327682, 0, 1114118, 0, 0, 1179654, 0, 0, 1179655, 0, 0, 1048606, 0, 0, 1114142, 0, 0, 1179677, 0, 0, 1114141, 0, 0, 1048599, 327682, 0, 1048601, 327682, 1, 196611, 327682, 0, 262147, 327682, 1, 327683, 262146, 0, 393219, 262146, 1, 327704, 65536, 0, 327705, 65536, 0, 917532, 262146, 0, 851996, 262146, 0, 720899, 327682, 0, 720924, 327682, 0, 786460, 327682, 1, 393229, 327682, 1, 393234, 327682, 1, 720914, 327682, 0, 1048589, 262146, 1, 1048590, 327682, 1, 1048591, 262146, 1, 1048592, 327682, 0, 1048593, 262146, 1, 1048594, 262146, 1, 65549, 327682, 0, 65550, 327682, 1, 65552, 262146, 1, 65553, 262146, 1, 65554, 327682, 1, 65548, 327682, 1, 65547, 327682, 0, 65546, 262146, 0, 65545, 262146, 1, 65544, 262146, 0, 720904, 262146, 0, 1048588, 262146, 1, 1048587, 327682, 0, 1048581, 262146, 0, 720898, 262146, 1, 393218, 262146, 1, 327682, 327682, 0, 262146, 327682, 0, 196610, 327682, 1, 65540, 327682, 1, 65541, 327682, 0, 65543, 262146, 1, 65539, 327682, 0, 65555, 327682, 1, 65556, 262146, 0, 65559, 327682, 1, 393244, 327682, 1, 720919, 262146, 1, 1048595, 327682, 1, 1048596, 262146, 1, 1048598, 327682, 1, 1048597, 262146, 0, 1048600, 262146, 0, 983068, 262146, 1, 1048604, 327682, 1, 983069, 327682, 0, 851997, 262146, 0, 786461, 262146, 1, 720925, 262146, 1, 393245, 262146, 0, 393224, 262146, 0, 393239, 262146, 1, 851978, 65536, 0, 851990, 65536, 0, 851988, 65536, 0, 917519, 65536, 0, 917520, 65536, 0, 262164, 65536, 0, 196626, 65536, 0, 196623, 65536, 0, 262154, 65536, 0, 196616, 65536, 0, 262150, 65536, 0, 196617, 65536, 0, 458754, 327682, 1, 524290, 327682, 0, 589826, 262146, 1, 655362, 327682, 0, 655363, 262146, 1, 589827, 262146, 0, 524291, 262146, 0, 458755, 262146, 1, 458780, 262146, 0, 524317, 262146, 1, 589853, 262146, 1, 655389, 327682, 1, 655388, 327682, 1, 589852, 262146, 0, 524316, 262146, 0, 458781, 262146, 0, 65561, 262146, 0, 65560, 262146, 0, 327708, 327682, 0, 262172, 262146, 0)
+
+[node name="Camera2D" type="Camera2D" parent="."]
+anchor_mode = 0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+layer = -9
+
+[node name="Polygon2D" type="Polygon2D" parent="CanvasLayer"]
+color = Color(0, 0, 0, 0.501961)
+polygon = PackedVector2Array(0, 0, 0, 320, 512, 320, 512, 0)
+
+[node name="PlayerCharacterBody" parent="." instance=ExtResource("2_dnc7d")]
+position = Vector2(64, 128)
+
+[node name="DeathArea2DMid" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(256, 104)
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("3_0a2sj")
+color_shift = -0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DMid"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_pvw5b")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DMid/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-32, -8, 64, 16)
+
+[node name="DeathArea2DMid2" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(176, 104)
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("3_0a2sj")
+color_shift = -0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DMid2"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_pvw5b")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DMid2/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-32, -8, 64, 16)
+
+[node name="DeathArea2DMid4" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(96, 104)
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("3_0a2sj")
+color_shift = -0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DMid4"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_pvw5b")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DMid4/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-32, -8, 64, 16)
+
+[node name="DeathArea2DMid3" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(336, 104)
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("3_0a2sj")
+color_shift = -0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DMid3"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_pvw5b")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DMid3/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-32, -8, 64, 16)
+
+[node name="DeathArea2DMid5" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(416, 104)
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("3_0a2sj")
+color_shift = -0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DMid5"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_pvw5b")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DMid5/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-32, -8, 64, 16)
+
+[node name="DeathArea2DMid6" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(256, 184)
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("3_0a2sj")
+color_shift = -0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DMid6"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_pvw5b")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DMid6/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-32, -8, 64, 16)
+
+[node name="DeathArea2DMid7" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(176, 184)
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("3_0a2sj")
+color_shift = -0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DMid7"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_pvw5b")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DMid7/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-32, -8, 64, 16)
+
+[node name="DeathArea2DMid8" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(96, 184)
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("3_0a2sj")
+color_shift = -0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DMid8"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_pvw5b")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DMid8/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-32, -8, 64, 16)
+
+[node name="DeathArea2DMid9" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(336, 184)
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("3_0a2sj")
+color_shift = -0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DMid9"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_pvw5b")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DMid9/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-32, -8, 64, 16)
+
+[node name="DeathArea2DMid10" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(416, 184)
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("3_0a2sj")
+color_shift = -0.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DMid10"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_pvw5b")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DMid10/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-32, -8, 64, 16)
+
+[node name="DeathArea2DLow" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(136, 144)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DLow"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_prvs7")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DLow/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-8, -32, 16, 64)
+metadata/_edit_pinned_properties_ = [&"rect"]
+
+[node name="DeathArea2DHigh" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(216, 144)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DHigh"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_prvs7")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DHigh/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-8, -32, 16, 64)
+
+[node name="DeathArea2DLow2" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(296, 144)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DLow2"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_prvs7")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DLow2/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-8, -32, 16, 64)
+metadata/_edit_pinned_properties_ = [&"rect"]
+
+[node name="DeathArea2DHigh2" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(376, 144)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DHigh2"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_prvs7")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DHigh2/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-8, -32, 16, 64)
+
+[node name="DeathArea2DLow3" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(136, 64)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DLow3"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_prvs7")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DLow3/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-8, -32, 16, 64)
+metadata/_edit_pinned_properties_ = [&"rect"]
+
+[node name="DeathArea2DHigh3" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(216, 64)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DHigh3"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_prvs7")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DHigh3/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-8, -32, 16, 64)
+
+[node name="DeathArea2DLow4" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(296, 64)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DLow4"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_prvs7")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DLow4/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-8, -32, 16, 64)
+metadata/_edit_pinned_properties_ = [&"rect"]
+
+[node name="DeathArea2DHigh4" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(376, 64)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DHigh4"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_prvs7")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DHigh4/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-8, -32, 16, 64)
+
+[node name="DeathArea2DLow5" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(136, 224)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DLow5"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_prvs7")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DLow5/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-8, -32, 16, 64)
+metadata/_edit_pinned_properties_ = [&"rect"]
+
+[node name="DeathArea2DHigh5" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(216, 224)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DHigh5"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_prvs7")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DHigh5/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-8, -32, 16, 64)
+
+[node name="DeathArea2DLow6" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(296, 224)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DLow6"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_prvs7")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DLow6/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-8, -32, 16, 64)
+metadata/_edit_pinned_properties_ = [&"rect"]
+
+[node name="DeathArea2DHigh6" type="Area2D" parent="."]
+use_parent_material = true
+position = Vector2(376, 224)
+collision_layer = 2
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2DHigh6"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_prvs7")
+
+[node name="Node2D" type="Node2D" parent="DeathArea2DHigh6/CollisionShape2D"]
+use_parent_material = true
+script = ExtResource("3_fy5d5")
+texture = ExtResource("5_45gh5")
+rect = Rect2(-8, -32, 16, 64)
+
+[node name="Button" parent="." instance=ExtResource("5_nxsdi")]
+position = Vector2(-16, -16)
