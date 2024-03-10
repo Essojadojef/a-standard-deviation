@@ -18,6 +18,8 @@ func _on_body_entered(body: Node2D) -> void:
 	if body != self and body is Entity:
 		if filter_color and body.color_shift != color_shift:
 			return
+		if "can_fly" in body and body.can_fly:
+			return
 		
 		if body.has_signal("defeated"):
 			body.defeated.emit()
