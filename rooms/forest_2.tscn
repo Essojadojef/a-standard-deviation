@@ -12,28 +12,31 @@ blend_mode = 1
 [sub_resource type="GDScript" id="GDScript_4mv6m"]
 script/source = "extends Room
 
-var solved = false
-
 func _ready() -> void:
 	Globals.bgm_player.stream = preload(\"res://music/Groovy Laboratory.ogg\")
 	Globals.bgm_player.play()
-	
-	if Globals.room_transition:
-		await Globals.room_transition_finished
-		$PlayerCharacterBody.position = Globals.player_position
-	
+	$PlayerCharacterBody.hide()
+	super._ready()
+
+func setup(room_transition_occurred: bool):
+	$PlayerCharacterBody.show()
 	spawn_clones($PlayerCharacterBody, clone_multiplier, 1)
 	
+	if Globals.progress.forest_2_solved:
+		unlock_door()
+		set_physics_process(false)
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	$StaticBody2DLow.modulate  = Globals.color_spectrum.sample(.25)
 	$StaticBody2DHigh.modulate = Globals.color_spectrum.sample(.75)
-	super._process(delta)
+	if !Globals.progress.forest_2_solved:
+		process_puzzle()
+	super._physics_process(delta)
 
 func neighbour_rooms(side: int) -> String:
 	match side:
-		SIDE_TOP: return \"res://rooms/dungeon_entrance_forcefield.tscn\"
-		SIDE_BOTTOM: return \"res://rooms/seaside_2.tscn\"
+		SIDE_TOP: return \"res://rooms/eagle_nest.tscn\"
+		SIDE_BOTTOM: return \"res://rooms/forest_1.tscn\"
 	return super.neighbour_rooms(side)
 
 func setup_clone(node: Node2D):
@@ -42,14 +45,13 @@ func setup_clone(node: Node2D):
 	if node.color_shift !=  .5:
 		$StaticBody2DHigh.add_collision_exception_with(node)
 
-func _physics_process(delta: float) -> void:
+func process_puzzle() -> void:
 	var buttons = [$Button, $Button2, $Button3]
-	var solution = buttons.all(func(button): return button.pressed)
+	var solution = buttons.all(func(button): return button and button.pressed)
 	
 	if solution:
-		solved = true
+		Globals.progress.forest_2_solved = true
 		unlock_door_anim()
-		set_physics_process(false)
 
 func unlock_door():
 	for x in range(13, 19):

@@ -2,6 +2,12 @@ extends Node
 
 # room transition
 
+var progress = {
+	"forest_1_solved" = false,
+	"forest_2_solved" = false,
+	"frogs_obtained" = 0,
+}
+
 var room_transition: bool = false
 var room_transition_direction: Vector2
 var last_room_filepath: String
@@ -43,3 +49,61 @@ func process_group(group_name: String) -> void:
 	var error = Vector2(positions_x.max(), positions_y.max()) - Vector2(positions_x.min(), positions_y.min())
 	clone_spread[group_name] = error
 
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_WM_CLOSE_REQUEST:
+			# handle close request
+			write_save()
+
+func write_save():
+	#var save_game = FileAccess.open("user://save.txt", FileAccess.WRITE)
+	#var json_string = JSON.stringify(progress)
+	#save_game.store_line(json_string)
+	
+	# Create new ConfigFile object.
+	var config = ConfigFile.new()
+	for i in progress:
+		config.set_value("Progress", i, progress[i])
+	
+	config.save("user://save.txt")
+
+func read_save():
+	if !FileAccess.file_exists("user://save.txt"):
+		print("Savefile does not exist")
+		return
+	
+	"""
+	var save_game = FileAccess.open("user://save", FileAccess.READ)
+	while save_game.get_position() < save_game.get_length():
+		var json_string = save_game.get_line()
+		
+		# Creates the helper class to interact with JSON
+		var json = JSON.new()
+		
+		# Check if there is any error while parsing the JSON string, skip in case of failure
+		var parse_result = json.parse(json_string)
+		if not parse_result == OK:
+			print("JSON Parse Error: ", json.get_error_message(), " in ", json_string, " at line ", json.get_error_line())
+			continue
+		
+		# Get the data from the JSON object
+		var node_data = json.get_data()
+		
+	var json_string = JSON.stringify(progress)
+	save_game.store_line(json_string)
+	"""
+	
+	var config = ConfigFile.new()
+	
+	# Load data from a file.
+	var err = config.load("user://save.txt")
+	
+	# If the file didn't load, ignore it.
+	if err != OK:
+		return
+	
+	progress.forest_1_solved = config.get_value("Progress", "forest_1_solved", false)
+	progress.forest_2_solved = config.get_value("Progress", "forest_2_solved", false)
+	progress.frogs_obtained  = config.get_value("Progress", "frogs_obtained", 0)
+	
+	
