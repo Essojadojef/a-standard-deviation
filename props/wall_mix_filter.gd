@@ -1,12 +1,13 @@
 extends StaticBody2D
 class_name WallMixFilter
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	var group = "player"
-	if !Globals.clone_groups.has(group): return
+	var player_characters = get_tree().get_nodes_in_group(group)
+	if !player_characters or !Globals.clone_spread.has(group): return
 	
 	var gate_open = (
-		Globals.clone_groups[group] == get_parent().clone_multiplier and
+		player_characters.size() == get_parent().clone_multiplier and
 		(Globals.clone_spread[group] as Vector2).length() < 1
 	)
 	

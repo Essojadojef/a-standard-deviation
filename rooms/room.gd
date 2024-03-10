@@ -13,10 +13,15 @@ var exit_transition_directions = {
 }
 
 func _ready() -> void:
-	spawn_clones($PlayerSpaceship, clone_multiplier, 1)
-	spawn_clones($SpaceEnemy, clone_multiplier, 1)
-	spawn_clones($CharacterBody2D, clone_multiplier, 1)
-	spawn_clones($PlayerCharacterBody, clone_multiplier, 1)
+	if Globals.room_transition:
+		await Globals.room_transition_finished
+		$PlayerCharacterBody.position = Globals.player_position
+		$PlayerCharacterBody.forward_vector = Globals.room_transition_direction
+		setup(true)
+	else:
+		setup(false)
+
+func setup(room_transition_occurred: bool): pass
 
 func spawn_clones(base_node: Node, n: int, spread: float):
 	var clone_group_id: String = base_node.scene_file_path
@@ -37,6 +42,8 @@ func spawn_clones(base_node: Node, n: int, spread: float):
 		node.color_shift += shift * spread / (n - 1)
 		node.peak_level = peak_level
 		node.name += "_%d" % i
+		if "forward_vector" in base_node:
+			node.forward_vector = base_node.forward_vector
 		add_child(node, true)
 		setup_clone(node)
 		
@@ -61,7 +68,10 @@ func unspawn_clones(base_node: Node):
 		remove_child(i)
 		i.queue_free()
 
-const playable_area = Rect2(0, 0, 512, 288)
+var playable_area = Rect2(0, 0, 512, 288).grow(8)
+# growing the playable_area gives an amount of hysteresis
+# (prevents the repeated back-and-forth room transition that may occour when
+# the player is between two different rooms)
 
 func neighbour_rooms(side: int) -> String:
 	return scene_file_path
@@ -86,16 +96,17 @@ func is_outside_room(node: Node2D) -> bool:
 
 func perform_room_transition(room_transition_character: Entity):
 	Globals.room_transition = true
+	get_tree().paused = true
 	
 	var exit: int
-	if room_transition_character.position.x < 0:
+	if room_transition_character.position.x < playable_area.position.x:
 		exit = SIDE_LEFT
-	if room_transition_character.position.y < 0:
-		exit = (SIDE_TOP)
-	if room_transition_character.position.x > playable_area.size.x:
-		exit = (SIDE_RIGHT)
-	if room_transition_character.position.y > playable_area.size.y:
-		exit = (SIDE_BOTTOM)
+	if room_transition_character.position.y < playable_area.position.y:
+		exit = SIDE_TOP
+	if room_transition_character.position.x > playable_area.end.x:
+		exit = SIDE_RIGHT
+	if room_transition_character.position.y > playable_area.end.y:
+		exit = SIDE_BOTTOM
 	
 	var pan_direction: Vector2 = exit_transition_directions[exit]
 	
@@ -109,6 +120,7 @@ func perform_room_transition(room_transition_character: Entity):
 	next_room.position = room_size * pan_direction * 2
 	
 	var tween = create_tween()
+	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tween.set_parallel(true)
 	tween.tween_property(self, "position", -room_size * pan_direction * 2, 1)
 	$Camera2D.top_level = true
@@ -123,8 +135,11 @@ func perform_room_transition(room_transition_character: Entity):
 	await tween.finished
 	
 	Globals.player_position = room_transition_character.position
+	Globals.room_transition_direction = pan_direction
 	queue_free()
 	
 	get_tree().current_scene = next_room
 	Globals.room_transition = false
 	Globals.room_transition_finished.emit(scene_file_path)
+	
+	get_tree().paused = false

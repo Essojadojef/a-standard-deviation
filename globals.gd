@@ -3,6 +3,8 @@ extends Node
 # room transition
 
 var room_transition: bool = false
+var room_transition_direction: Vector2
+var last_room_filepath: String
 var player_position: Vector2
 
 signal room_transition_finished(prev_room, direction)
