@@ -1,0 +1,41 @@
+[gd_scene load_steps=9 format=3 uid="uid://c2mbasm5ax4wv"]
+
+[ext_resource type="PackedScene" uid="uid://b25gw85jw2bav" path="res://rooms/color_detector.tscn" id="1_muwhe"]
+[ext_resource type="PackedScene" uid="uid://cd2rpbxiq4lp8" path="res://rooms/dungeon_entrance_door.tscn" id="2_66i3m"]
+[ext_resource type="PackedScene" uid="uid://dpi778cmhtdoq" path="res://rooms/dungeon_entrance_forcefield.tscn" id="3_qje8i"]
+[ext_resource type="PackedScene" uid="uid://cdrtyfieyq38f" path="res://rooms/forest_1.tscn" id="4_n5xkj"]
+[ext_resource type="PackedScene" uid="uid://cv5rsb13upav8" path="res://rooms/seaside_2.tscn" id="5_h5abu"]
+[ext_resource type="PackedScene" uid="uid://dk87texc5wrd1" path="res://rooms/seaside_1.tscn" id="6_unagk"]
+[ext_resource type="PackedScene" uid="uid://nw3rr5nhregj" path="res://rooms/forest_maze.tscn" id="8_6q7p7"]
+[ext_resource type="PackedScene" uid="uid://cu13liq4vrdxc" path="res://rooms/forest_2.tscn" id="9_hpmrx"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="FlowerPuzzle" parent="." instance=ExtResource("1_muwhe")]
+
+[node name="LabEntranceDoor" parent="." instance=ExtResource("2_66i3m")]
+position = Vector2(768, -417)
+
+[node name="LabEntranceForcefield" parent="." instance=ExtResource("3_qje8i")]
+position = Vector2(768, -1)
+
+[node name="Forest1" parent="." instance=ExtResource("4_n5xkj")]
+position = Vector2(0, 424)
+
+[node name="Forest2" parent="." instance=ExtResource("9_hpmrx")]
+position = Vector2(768, 415)
+
+[node name="Forest3" parent="." instance=ExtResource("9_hpmrx")]
+position = Vector2(1536, 416)
+
+[node name="Seaside3" parent="." instance=ExtResource("5_h5abu")]
+position = Vector2(1536, 831)
+
+[node name="Seaside2" parent="." instance=ExtResource("5_h5abu")]
+position = Vector2(768, 831)
+
+[node name="Seaside1" parent="." instance=ExtResource("6_unagk")]
+position = Vector2(0, 831)
+
+[node name="Maze" parent="." instance=ExtResource("8_6q7p7")]
+position = Vector2(1536, 0)

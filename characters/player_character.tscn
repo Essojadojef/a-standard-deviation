@@ -8,8 +8,8 @@
 blend_mode = 1
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7p3un"]
-radius = 8.0
-height = 32.0
+radius = 4.0
+height = 15.0
 
 [node name="PlayerCharacterBody" type="CharacterBody2D" groups=["player", "player_character"]]
 material = SubResource("CanvasItemMaterial_1utq4")

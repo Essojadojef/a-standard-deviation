@@ -1,8 +1,9 @@
-[gd_scene load_steps=10 format=3 uid="uid://dpi778cmhtdoq"]
+[gd_scene load_steps=11 format=3 uid="uid://dpi778cmhtdoq"]
 
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="1_uemdp"]
 [ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="4_6sxd1"]
 [ext_resource type="PackedScene" uid="uid://8ie1utu4xcwt" path="res://props/rectangle_collision_shape_2d_textured.tscn" id="5_kjgfs"]
+[ext_resource type="Script" path="res://props/death_area.gd" id="6_i81dk"]
 [ext_resource type="Script" path="res://props/wall_mix_filter.gd" id="8_cvgiq"]
 [ext_resource type="Script" path="res://props/velocity_multiplier_field.gd" id="9_etmvo"]
 
@@ -19,16 +20,23 @@ func _ready() -> void:
 
 func neighbour_rooms(side: int) -> String:
 	match side:
+		SIDE_LEFT: return \"res://rooms/forest_1.tscn\"
 		SIDE_TOP: return \"res://rooms/dungeon_entrance_door.tscn\"
+		SIDE_RIGHT: return \"res://rooms/forest_maze.tscn\"
 		SIDE_BOTTOM: return \"res://rooms/forest_2.tscn\"
 	return super.neighbour_rooms(side)
-"
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_bfv7i"]
-size = Vector2(256, 32)
+func _physics_process(delta: float) -> void:
+	for i in $Area2D.get_overlapping_bodies():
+		if !(i is Entity): continue
+		i.velocity.x += i.color_shift * delta * 10000
+"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_odcde"]
 size = Vector2(520, 64)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xkokf"]
+size = Vector2(224, 224)
 
 [node name="Node2D" type="Node2D"]
 material = SubResource("CanvasItemMaterial_328yp")
@@ -56,24 +64,36 @@ polygon = PackedVector2Array(0, 0, 0, 320, 512, 320, 512, 0)
 [node name="PlayerCharacterBody" parent="." instance=ExtResource("4_6sxd1")]
 position = Vector2(256, 224)
 
-[node name="Area2D" type="StaticBody2D" parent="."]
+[node name="Wall" type="StaticBody2D" parent="."]
 position = Vector2(256, 48)
 collision_layer = 2
 collision_mask = 3
 script = ExtResource("8_cvgiq")
 metadata/_edit_group_ = true
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
-shape = SubResource("RectangleShape2D_bfv7i")
+[node name="CollisionShape2D2" parent="Wall" instance=ExtResource("5_kjgfs")]
 
-[node name="CollisionShape2D2" parent="Area2D" instance=ExtResource("5_kjgfs")]
-
-[node name="Area2D2" type="Area2D" parent="."]
+[node name="Area2D" type="Area2D" parent="."]
 position = Vector2(256, 128)
 collision_layer = 3
 collision_mask = 3
 script = ExtResource("9_etmvo")
 metadata/_edit_group_ = true
 
-[node name="CollisionShape2D2" parent="Area2D2" instance=ExtResource("5_kjgfs")]
+[node name="CollisionShape2D2" parent="Area2D" instance=ExtResource("5_kjgfs")]
 shape = SubResource("RectangleShape2D_odcde")
+
+[node name="DeathArea2D" type="Area2D" parent="."]
+position = Vector2(256, 128)
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("6_i81dk")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DeathArea2D"]
+position = Vector2(-184, -32)
+shape = SubResource("RectangleShape2D_xkokf")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="DeathArea2D"]
+position = Vector2(184, -32)
+shape = SubResource("RectangleShape2D_xkokf")
