@@ -4,6 +4,9 @@ class_name Room
 @export
 var clone_multiplier: int = 7
 
+@export
+var bgm: AudioStream
+
 # room transition
 var exit_transition_directions = {
 	SIDE_LEFT: Vector2.LEFT,
@@ -12,7 +15,15 @@ var exit_transition_directions = {
 	SIDE_BOTTOM: Vector2.DOWN
 }
 
+func get_entities():
+	return get_children().filter(func(child): return child is Entity)
+
 func _ready() -> void:
+	Globals.play_bgm(bgm)
+	
+	for i in get_entities():
+		i.hide()
+	
 	if Globals.room_transition:
 		await Globals.room_transition_finished
 		$PlayerCharacterBody.position = Globals.player_position
@@ -21,7 +32,10 @@ func _ready() -> void:
 	else:
 		setup(false)
 
-func setup(room_transition_occurred: bool): pass
+func setup(room_transition_occurred: bool):
+	for i in get_entities():
+		i.show()
+		spawn_clones(i, clone_multiplier, 1)
 
 func spawn_clones(base_node: Node, n: int, spread: float):
 	var clone_group_id: String = base_node.scene_file_path
@@ -68,7 +82,7 @@ func unspawn_clones(base_node: Node):
 		remove_child(i)
 		i.queue_free()
 
-var playable_area = Rect2(0, 0, 512, 288).grow(8)
+var playable_area = Rect2(0, 0, 512, 288).grow(4)
 # growing the playable_area gives an amount of hysteresis
 # (prevents the repeated back-and-forth room transition that may occour when
 # the player is between two different rooms)
@@ -76,8 +90,18 @@ var playable_area = Rect2(0, 0, 512, 288).grow(8)
 func neighbour_rooms(side: int) -> String:
 	return scene_file_path
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
+	process_defeat()
 	process_room_transition()
+
+func process_defeat() -> void:
+	if Globals.room_transition:
+		return
+	
+	var player_characters = get_tree().get_nodes_in_group("player")
+	
+	if player_characters.is_empty():
+		respawn_player_character()
 
 func process_room_transition() -> void:
 	if Globals.room_transition:
@@ -143,3 +167,10 @@ func perform_room_transition(room_transition_character: Entity):
 	Globals.room_transition_finished.emit(scene_file_path)
 	
 	get_tree().paused = false
+
+func respawn_player_character():
+	var character = preload("res://characters/player_character.tscn").instantiate()
+	add_child(character)
+	character.position = Globals.player_position
+	character.forward_vector = Globals.room_transition_direction
+	spawn_clones(character, clone_multiplier, 1)

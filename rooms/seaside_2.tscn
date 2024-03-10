@@ -1,5 +1,6 @@
-[gd_scene load_steps=6 format=3 uid="uid://cv5rsb13upav8"]
+[gd_scene load_steps=7 format=3 uid="uid://cv5rsb13upav8"]
 
+[ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.ogg" id="1_lb6ap"]
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="1_x5gsj"]
 [ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="6_8yjo4"]
 [ext_resource type="PackedScene" uid="uid://ddhc8oarlcbhp" path="res://enemies/crabbit.tscn" id="7_xjqng"]
@@ -9,15 +10,6 @@ blend_mode = 1
 
 [sub_resource type="GDScript" id="GDScript_4mv6m"]
 script/source = "extends Room
-
-func _ready() -> void:
-	if Globals.room_transition:
-		await Globals.room_transition_finished
-		$PlayerCharacterBody.position = Globals.player_position
-	
-	spawn_clones($Crabbit, clone_multiplier, 1)
-	spawn_clones($Crabbit2, clone_multiplier, 1)
-	spawn_clones($PlayerCharacterBody, clone_multiplier, 1)
 
 func neighbour_rooms(side: int) -> String:
 	if side == SIDE_LEFT:
@@ -31,6 +23,7 @@ func neighbour_rooms(side: int) -> String:
 material = SubResource("CanvasItemMaterial_328yp")
 script = SubResource("GDScript_4mv6m")
 clone_multiplier = 3
+bgm = ExtResource("1_lb6ap")
 
 [node name="TileMap" type="TileMap" parent="."]
 modulate = Color(0.501961, 0.501961, 0.501961, 1)

@@ -1,4 +1,4 @@
-extends Entity
+extends Node2D
 
 @export_range(0, 1)
 var base_level: float
@@ -8,9 +8,6 @@ var peak_level: float = 1
 var color_shift: float = 0
 
 var pressed = false
-
-func _ready() -> void:
-	damage_received.connect(_on_damage_received)
 
 func _process(delta: float) -> void:
 	modulate = Globals.color_spectrum.sample(color_shift / 2 + .5)

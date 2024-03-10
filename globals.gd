@@ -30,8 +30,13 @@ var process_groups: Array = ["player"]
 func _ready() -> void:
 	add_child(gui)
 	add_child(bgm_player)
-	bgm_player.stream = preload("res://music/Seaside exploration r2.ogg")
 	bgm_player.bus = "BGM"
+	bgm_player.process_mode = Node.PROCESS_MODE_ALWAYS
+	play_bgm(preload("res://music/Seaside exploration r2.ogg"))
+
+func play_bgm(stream: AudioStream):
+	if bgm_player.stream == stream: return
+	bgm_player.stream = stream
 	bgm_player.play()
 
 func _process(delta: float) -> void:

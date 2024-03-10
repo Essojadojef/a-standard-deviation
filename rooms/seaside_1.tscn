@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://dk87texc5wrd1"]
+[gd_scene load_steps=10 format=3 uid="uid://dk87texc5wrd1"]
 
 [ext_resource type="Script" path="res://rooms/seaside_1.gd" id="1_7abdk"]
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="2_hcgjn"]
+[ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.ogg" id="2_ukqcj"]
 [ext_resource type="PackedScene" uid="uid://lkb2qg55u2ak" path="res://characters/captain.tscn" id="4_2xgc1"]
 [ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/frog.tscn" id="6_3pba2"]
 [ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="7_hemwf"]
@@ -17,6 +18,7 @@ size = Vector2(48, 48)
 material = SubResource("CanvasItemMaterial_328yp")
 script = ExtResource("1_7abdk")
 clone_multiplier = 3
+bgm = ExtResource("2_ukqcj")
 
 [node name="TileMap" type="TileMap" parent="."]
 modulate = Color(0.501961, 0.501961, 0.501961, 1)

@@ -1,6 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://nw3rr5nhregj"]
+[gd_scene load_steps=12 format=3 uid="uid://nw3rr5nhregj"]
 
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="1_f7xdx"]
+[ext_resource type="AudioStream" uid="uid://7n44sy0tuc8f" path="res://music/Groovy Laboratory.ogg" id="1_liirq"]
 [ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="2_dnc7d"]
 [ext_resource type="Script" path="res://props/death_area.gd" id="3_0a2sj"]
 [ext_resource type="Script" path="res://props/sprite_rect.gd" id="3_fy5d5"]
@@ -44,6 +45,7 @@ size = Vector2(16, 64)
 material = SubResource("CanvasItemMaterial_328yp")
 script = SubResource("GDScript_4mv6m")
 clone_multiplier = 3
+bgm = ExtResource("1_liirq")
 
 [node name="TileMap" type="TileMap" parent="."]
 modulate = Color(0.501961, 0.501961, 0.501961, 1)

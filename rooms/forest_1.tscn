@@ -1,6 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://cdrtyfieyq38f"]
+[gd_scene load_steps=9 format=3 uid="uid://cdrtyfieyq38f"]
 
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="1_b6d70"]
+[ext_resource type="AudioStream" uid="uid://7n44sy0tuc8f" path="res://music/Groovy Laboratory.ogg" id="1_mnfe8"]
 [ext_resource type="PackedScene" uid="uid://cearwdot6cpky" path="res://props/pressure_plate.tscn" id="3_g36am"]
 [ext_resource type="Script" path="res://props/velocity_multiplier_field.gd" id="4_4gn60"]
 [ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="4_jk17v"]
@@ -12,16 +13,11 @@ blend_mode = 1
 [sub_resource type="GDScript" id="GDScript_4mv6m"]
 script/source = "extends Room
 
-func _ready() -> void:
-	super._ready()
-
 func setup(room_transition_occurred: bool):
-	$PlayerCharacterBody.show()
-	spawn_clones($PlayerCharacterBody, clone_multiplier, 1)
+	super.setup(room_transition_occurred)
 	
 	if Globals.progress.forest_1_solved:
 		unlock_door()
-		set_physics_process(false)
 
 func neighbour_rooms(side: int) -> String:
 	match side:
@@ -59,6 +55,7 @@ func unlock_door_anim():
 material = SubResource("CanvasItemMaterial_328yp")
 script = SubResource("GDScript_4mv6m")
 clone_multiplier = 5
+bgm = ExtResource("1_mnfe8")
 
 [node name="TileMap" type="TileMap" parent="."]
 modulate = Color(0.501961, 0.501961, 0.501961, 1)

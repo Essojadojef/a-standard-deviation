@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://cu13liq4vrdxc"]
+[gd_scene load_steps=10 format=3 uid="uid://cu13liq4vrdxc"]
 
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="1_g43jf"]
+[ext_resource type="AudioStream" uid="uid://7n44sy0tuc8f" path="res://music/Groovy Laboratory.ogg" id="1_i48ti"]
 [ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="2_f5piu"]
 [ext_resource type="Script" path="res://props/sprite_rect.gd" id="3_fv2i4"]
 [ext_resource type="Texture2D" uid="uid://bhw6ruxbrwpv" path="res://props/spectrum_filter.png" id="4_5nwtb"]
@@ -12,19 +13,12 @@ blend_mode = 1
 [sub_resource type="GDScript" id="GDScript_4mv6m"]
 script/source = "extends Room
 
-func _ready() -> void:
-	Globals.bgm_player.stream = preload(\"res://music/Groovy Laboratory.ogg\")
-	Globals.bgm_player.play()
-	$PlayerCharacterBody.hide()
-	super._ready()
-
 func setup(room_transition_occurred: bool):
 	$PlayerCharacterBody.show()
 	spawn_clones($PlayerCharacterBody, clone_multiplier, 1)
 	
 	if Globals.progress.forest_2_solved:
 		unlock_door()
-		set_physics_process(false)
 
 func _physics_process(delta: float) -> void:
 	$StaticBody2DLow.modulate  = Globals.color_spectrum.sample(.25)
@@ -72,6 +66,7 @@ size = Vector2(16, 64)
 material = SubResource("CanvasItemMaterial_328yp")
 script = SubResource("GDScript_4mv6m")
 clone_multiplier = 3
+bgm = ExtResource("1_i48ti")
 
 [node name="TileMap" type="TileMap" parent="."]
 modulate = Color(0.501961, 0.501961, 0.501961, 1)
