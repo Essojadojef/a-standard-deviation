@@ -42,6 +42,11 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 	
+	# disappear afer hitstun
+	if damage > max_damage:
+		queue_free()
+		return
+	
 	velocity = Vector2()
 	
 	
@@ -84,6 +89,7 @@ func setup_jump():
 	jump_phase = 0
 
 func _on_damage_received(hit_direction: Vector2):
+	damage += 1
 	hitstun = .125
 	velocity = hit_direction * 300 * pow(2, color_shift * 1.5)
 	jump_count = 0

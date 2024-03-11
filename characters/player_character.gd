@@ -22,6 +22,7 @@ var focus_color_shift:float = 0
 signal defeated()
 
 func _ready() -> void:
+	max_damage = 3
 	damage_received.connect(_on_damage_received)
 	defeated.connect(Globals.gui._on_player_character_defeated.bind(self))
 
@@ -43,7 +44,15 @@ func _physics_process(delta: float) -> void:
 	
 	if hitstun:
 		hitstun = max(hitstun - delta, 0)
+		visible = fmod(hitstun * 10, 1) > .5
 		move_and_slide()
+		return
+	
+	visible = true
+	
+	if damage > max_damage:
+		defeated.emit()
+		queue_free()
 		return
 	
 	# Get the input direction and handle the movement/deceleration.
@@ -92,7 +101,6 @@ func focus_commute():
 	var player_characters = get_tree().get_nodes_in_group("player")
 	var colors = player_characters.map(func(node): return node.color_shift)
 	colors.sort()
-	print(colors)
 	
 	if !focus_color:
 		focus_color = true
@@ -123,6 +131,19 @@ func stop_attack():
 	$Hurtbox.hide()
 	$Hurtbox/CollisionPolygon2D.disabled = true
 
+func get_cursor_direction():
+	return (get_global_mouse_position() - global_position).normalized()
+
+func shoot():
+	var projectile_scene = preload("res://characters/arrow.tscn")
+	var projectile = projectile_scene.instantiate()
+	var cursor_direction: Vector2 = get_cursor_direction()
+	projectile.rotation = cursor_direction.angle()
+	projectile.color_shift = color_shift
+	projectile.position = position + cursor_direction * 32
+	projectile.linear_velocity = cursor_direction * 600
+	add_sibling(projectile)
+
 func _on_hurtbox_body_entered(body: Node2D) -> void:
 	if body == self: return
 	
@@ -131,6 +152,9 @@ func _on_hurtbox_body_entered(body: Node2D) -> void:
 		body.damage_received.emit(forward_vector)
 
 func _on_damage_received(hit_direction: Vector2):
+	if hitstun: return
+	damage += 1
 	hitstun = .125
-	velocity = hit_direction * 300 * pow(2, color_shift * 1.5)
+	#velocity = hit_direction * 300 * pow(2, color_shift * 1.5)
+	velocity = hit_direction * 300 * (randf() + randf())
 	stop_attack()
