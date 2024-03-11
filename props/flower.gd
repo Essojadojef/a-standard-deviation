@@ -27,11 +27,13 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 	
-	var grid_aligned_position = position.snapped(Vector2.ONE * 32)
-	var error = grid_aligned_position - position
+	var error = get_grid_aligned_position() - position
 	velocity = velocity.lerp(Vector2(), .3) + error * .2
 
 	move_and_slide()
+
+func get_grid_aligned_position() -> Vector2:
+	return position.snapped(Vector2.ONE * 32)
 
 func _on_damage_received(hit_direction: Vector2):
 	hitstun = .125

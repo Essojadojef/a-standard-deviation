@@ -34,6 +34,10 @@ func setup_clone(node: Node2D):
 	if node.scene_file_path == "res://enemies/eaglefly.tscn":
 		eagle_clones.append(node)
 
+func perform_room_transition(room_transition_character: Entity):
+	super.perform_room_transition(room_transition_character)
+	eagle_clones.clear()
+
 func process_battle():
 	if !eagle_clones:
 		$CanvasLayer2.visible = false

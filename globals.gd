@@ -5,6 +5,7 @@ extends Node
 var progress = {
 	"forest_1_solved" = false,
 	"forest_2_solved" = false,
+	"flowers_phase" = 0,
 	"frogs_obtained" = 0,
 }
 
@@ -28,6 +29,8 @@ var nodes_clone_group: Dictionary
 var process_groups: Array = ["player"]
 
 func _ready() -> void:
+	read_save()
+	
 	add_child(bgm_player)
 	bgm_player.bus = "BGM"
 	bgm_player.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -112,6 +115,7 @@ func read_save():
 	
 	progress.forest_1_solved = config.get_value("Progress", "forest_1_solved", false)
 	progress.forest_2_solved = config.get_value("Progress", "forest_2_solved", false)
+	progress.forest_2_solved = config.get_value("Progress", "flower_phase", 0)
 	progress.frogs_obtained  = config.get_value("Progress", "frogs_obtained", 0)
 	
 	
