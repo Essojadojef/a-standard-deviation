@@ -1,9 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://dgdudykh1fcqd"]
+[gd_scene load_steps=14 format=3 uid="uid://dgdudykh1fcqd"]
 
 [ext_resource type="AudioStream" uid="uid://dg1imm5j7b2uf" path="res://music/Seaside exploration r2.ogg" id="1_vhpwg"]
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="2_j1oe6"]
 [ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="3_w8p5n"]
+[ext_resource type="Script" path="res://characters/player_character_golf.gd" id="4_alhgp"]
 [ext_resource type="PackedScene" uid="uid://dubrgqdjfgpjv" path="res://props/ball.tscn" id="4_sq8qs"]
+[ext_resource type="Texture2D" uid="uid://bi3utnklrsci3" path="res://props/golf_goal.png" id="5_ocsu5"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_dfdjt"]
 blend_mode = 1
@@ -11,13 +13,194 @@ blend_mode = 1
 [sub_resource type="GDScript" id="GDScript_8ifam"]
 script/source = "extends Room
 
+var balls: Array = []
+
+var preparing_hit = false
+var player_pos: Vector2
+var target_pos: Vector2
+var hit_vector: Vector2
+var balance: float
+var power: float
+var linear_variance: float
+var angle_variance: float
+
+func _ready() -> void:
+	
+	if Globals.progress.golf_cleared:
+		$Sprite2D/AnimationPlayer.play(\"completed\")
+		$Sprite2D/AnimationPlayer.seek(.6, true)
+		unlock_door()
+	
+	super._ready()
+
 func neighbour_rooms(side: int) -> String:
 	match side:
 		SIDE_LEFT: return \"res://rooms/forest_0_crossing.tscn\"
 		SIDE_BOTTOM: return \"res://rooms/eagle_nest_seaside.tscn\"
 	return super.neighbour_rooms(side)
 
+func setup_clone(node: Node2D):
+	super.setup_clone(node)
+	
+	if node.scene_file_path == \"res://props/ball.tscn\":
+		balls.append(node)
+
+func perform_room_transition(room_transition_character):
+	super.perform_room_transition(room_transition_character)
+	balls.clear()
+
+func unlock_door():
+	for y in range(15, 17):
+		$TileMap.erase_cell(0, Vector2i(30, y))
+		$TileMap.erase_cell(0, Vector2i(31, y))
+
+func unlock_door_anim():
+	for y in range(15, 17):
+		await get_tree().create_timer(.33).timeout
+		$TileMap.erase_cell(0, Vector2i(30, y))
+		$TileMap.erase_cell(0, Vector2i(31, y))
+
+func _physics_process(delta: float) -> void:
+	super._physics_process(delta)
+	
+	if Globals.room_transition:
+		return
+	
+	if ($PlayerCharacterBody.position - player_pos).length() > 1:
+		cancel_hit()
+	
+	hit_vector = target_pos - player_pos
+	var tangent = hit_vector.normalized().rotated(PI / 2)
+	power = (target_pos - player_pos).length() * .5
+	
+	if preparing_hit:
+		var precision_vector = get_global_mouse_position() - player_pos
+		balance = abs(tangent.dot(precision_vector))
+		balance = clamp(abs(balance) / power, 0, 1) * PI * .5
+		angle_variance = sin(balance)
+		linear_variance = cos(balance)
+	else:
+		player_pos = $PlayerCharacterBody.position
+		target_pos = get_global_mouse_position()
+	
+	process_game()
+
+func process_game():
+	if Globals.progress.golf_cleared:
+		return
+	
+	if balls.any(func(ball: Node2D): return ball.velocity.length() > 0.1):
+		return
+	
+	var distances = balls.map(
+		func(ball: Node2D): return ball.position.distance_squared_to($Sprite2D.position)
+	)
+	var max_distance = distances.max()
+	
+	var solution = sqrt(max_distance) < 16
+	
+	if solution:
+		Globals.progress.golf_cleared = true
+		$Sprite2D/AnimationPlayer.play(\"completed\")
+		unlock_door_anim()
+	
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"action\") and !preparing_hit:
+		prepare_hit()
+	elif event.is_action_pressed(\"action\") and preparing_hit:
+		hit()
+
+func prepare_hit():
+	preparing_hit = true
+	for i in get_tree().get_nodes_in_group(\"player\"):
+		i.set_physics_process(false)
+
+func cancel_hit():
+	preparing_hit = false
+	for i in get_tree().get_nodes_in_group(\"player\"):
+		i.set_physics_process(true)
+
+func hit():
+	for i in get_tree().get_nodes_in_group(\"player\"):
+		i.forward_vector = (target_pos - player_pos).normalized()
+		i.attack()
+	cancel_hit()
+
+func _process(delta: float) -> void:
+	#super._process(delta)
+	queue_redraw()
+
+func _draw() -> void:
+	if !preparing_hit:
+		draw_line(player_pos, target_pos, Color.WHITE)
+	
+	if preparing_hit:
+		var vector = hit_vector.normalized()
+		var tangent = vector.rotated(PI / 2)
+		var near_point:Vector2  = target_pos - vector * power * linear_variance 
+		var far_point:Vector2   = target_pos + vector * power * linear_variance
+		var left_point:Vector2  = target_pos - tangent * power * angle_variance
+		var right_point:Vector2 = target_pos + tangent * power * angle_variance
+		draw_line(near_point , left_point , Color.WHITE)
+		draw_line(left_point , far_point  , Color.WHITE)
+		draw_line(far_point  , right_point, Color.WHITE)
+		draw_line(right_point, near_point , Color.WHITE)
 "
+
+[sub_resource type="Animation" id="Animation_xsglg"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_755my"]
+resource_name = "completed"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [1, 2, 3]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_reotc"]
+_data = {
+"RESET": SubResource("Animation_xsglg"),
+"completed": SubResource("Animation_755my")
+}
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i1jo5"]
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yy5cf"]
+bg_color = Color(1, 0, 0, 1)
+border_color = Color(1, 1, 1, 1)
+anti_aliasing = false
 
 [node name="Node2D" type="Node2D"]
 material = SubResource("CanvasItemMaterial_dfdjt")
@@ -31,13 +214,45 @@ z_as_relative = false
 tile_set = ExtResource("2_j1oe6")
 format = 2
 layer_0/z_index = -10
-layer_0/tile_data = PackedInt32Array(65561, 0, 0, 27, 0, 0, -65509, 0, 0, -65510, 0, 0, 25, 0, 0, 28, 0, 0, 29, 0, 0, 30, 0, 0, 31, 0, 0, 32, 0, 0, 65564, 0, 0, 131104, 0, 0, 131105, 0, 0, -65505, 0, 0, -65506, 0, 0, 65568, 0, 0, 655371, 65536, 0, 589833, 65536, 0, 524295, 65536, 0, 458759, 65536, 0, 524310, 65536, 0, 589854, 0, 268435456, 655390, 65536, 0, 786456, 65536, 0, 655366, 65536, 0, 786462, 0, 0, 786457, 65536, 0, 589849, 65536, 0, 458778, 65536, 0, 851999, 0, 0, 983071, 0, 0, 1179647, 0, 0, 1114113, 0, 0, 1114117, 0, 0, 1114119, 0, 0, 1114136, 0, 0, 1114143, 0, 0, 1114114, 0, 0, 196607, 0, 0, 0, 0, 0, 2, 0, 0, 65537, 0, 268435456, 3, 0, 268435456, 4, 0, 268435456, 131076, 0, 268435456, 131077, 0, 268435456, 5, 0, 0, 131075, 0, 0, 196609, 0, 268435456, 196608, 0, 0, 327680, 0, 0, 262146, 0, 0, 65542, 0, 0, 983040, 0, 0, 1048576, 0, 0, 1179650, 0, 0, 1048579, 0, 0, 1179653, 0, 0, 1048580, 0, 0, 1114112, 0, 0, 1179648, 0, 0, 1179646, 0, 0, 1114110, 0, 0, 1114111, 0, 0, 983038, 0, 0, 917502, 0, 0, 917534, 0, 0, 1048602, 0, 0, 1048603, 0, 0, 917535, 0, 0, 917536, 0, 0, 852001, 0, 0, 852000, 0, 0, 1179671, 0, 0, 1179672, 0, 0, 1179674, 0, 0, 1245210, 0, 0, 1245211, 0, 0, 1179682, 0, 0, 983076, 0, 0, 917540, 0, 0, 917538, 0, 0, 917537, 0, 0, 983072, 0, 0, 1048608, 0, 0, 1048607, 0, 0, 1179675, 0, 0, 1245207, 0, 0, 1048586, 0, 0, 1048585, 0, 0, 1048584, 0, 0, 1048583, 0, 0, 1179656, 0, 0, 1048582, 0, 0, 1114118, 0, 0, 1179654, 0, 0, 1179655, 0, 0, 917506, 0, 0, 1048606, 0, 0, 1114142, 0, 0, 1179677, 0, 0, 1114141, 0, 0, 1048599, 0, 0, 1048601, 0, 0, 327701, 65536, 0, 786435, 0, 268435456, 851971, 0, 0, 917507, 0, 0, 917510, 0, 0, 983048, 0, 0, 917505, 0, 0, 786432, 0, 0, 786434, 0, 0, 983047, 0, 268435456, 917509, 0, 268435456, 262148, 0, 268435456, 262173, 0, 0, 262174, 0, 268435456, 196639, 0, 0, 131099, 0, 0, 196635, 0, 0, 196636, 0, 0, 131102, 0, 0, 1114122, 0, 0, 851996, 0, 0, 983068, 0, 268435456, 1048591, 0, 0, 262160, 262146, 0, 458782, 0, 0, 524319, 0, 0, 524320, 0, 0, 589856, 0, 0, 589855, 0, 0, 655391, 0, 0, 720927, 0, 0, 720926, 0, 0, 458784, 0, 0, 327711, 0, 268435456, 393245, 0, 0, 327710, 0, 268435456, 1114123, 0, 268435456, 1114124, 0, 0, 1114125, 0, 268435456, 1114126, 0, 0, 1114129, 0, 0, 1048589, 0, 268435456, 1048588, 0, 0, 1048592, 0, 0, 1114128, 0, 268435456, 1179661, 0, 268435456, 24, 0, 268435456, 23, 0, 0, 22, 0, 268435456, 21, 0, 0, 20, 0, 268435456, 19, 0, 268435456, 18, 0, 268435456, -65521, 0, 268435456, 15, 0, 268435456, 9, 0, 268435456, 8, 0, 268435456, 11, 0, 268435456, 12, 0, 268435456, 65549, 0, 268435456, 65554, 0, 268435456, 65557, 0, 268435456, 17, 0, 0, -65520, 0, 0, -65523, 0, 0, 7, 0, 0, 10, 0, 0, 131079, 0, 0, 131096, 0, 0, 786441, 65536, 0, 851978, 65536, 0, 393234, 65536, 0, 589847, 65536, 0, 393240, 65536, 0, 851986, 65536, 0, 851987, 65536, 0, 720918, 65536, 0, 262157, 65536, 0, 851982, 65536, 0, 524302, 65536, 0, 327690, 65536, 0, 262163, 65536, 0, 786452, 65536, 0, 655379, 65536, 0, 589844, 65536, 0, 786448, 65536, 0, 786447, 65536, 0, 786444, 65536, 0, 720908, 65536, 0, 393225, 65536, 0, 458765, 65536, 0, 524303, 65536, 0, 720910, 65536, 0, 524306, 65536, 0, 393236, 65536, 0, 851991, 65536, 0, 720922, 65536, 0, 655387, 65536, 0, 393222, 65536, 0, 458757, 65536, 0, 327688, 65536, 0, 786439, 65536, 0, 524304, 262146, 0, 458768, 262146, 0, 393232, 262146, 0, 327696, 262146, 0, 196624, 262146, 0, 196616, 262146, 0, 196617, 262146, 0, 196618, 262146, 0, 196619, 262146, 0, 196620, 262146, 0, 196621, 262146, 0, 196622, 262146, 0, 196623, 262146, 0, 196625, 262146, 0, 196626, 262146, 0, 196627, 262146, 0, 196628, 262146, 0, 196629, 262146, 0, 196630, 262146, 0, 196631, 262146, 0, 589840, 65536, 0, 327695, 65536, 0, 1114132, 3, 0, 1114133, 3, 0, 1048597, 3, 0, 1048596, 3, 0, 1048595, 3, 0, 1114131, 3, 0, 1048594, 3, 0, 1114130, 3, 0, 1114134, 0, 268435456, 393215, 0, 0, 327678, 0, 0)
+layer_0/tile_data = PackedInt32Array(65561, 0, 0, 27, 0, 0, -65509, 0, 0, -65510, 0, 0, 25, 0, 0, 28, 0, 0, 29, 0, 0, 30, 0, 0, 31, 0, 0, 32, 0, 0, 65564, 0, 0, 131104, 0, 0, 131105, 0, 0, -65505, 0, 0, -65506, 0, 0, 65568, 0, 0, 655371, 65536, 0, 589833, 65536, 0, 524295, 65536, 0, 458759, 65536, 0, 524310, 65536, 0, 589854, 0, 268435456, 655390, 65536, 0, 786456, 65536, 0, 655366, 65536, 0, 786462, 0, 0, 786457, 65536, 0, 589849, 65536, 0, 458778, 65536, 0, 1179647, 0, 0, 1114113, 0, 0, 1114117, 0, 0, 1114119, 0, 0, 1114136, 0, 0, 1114114, 0, 0, 196607, 0, 0, 0, 0, 0, 2, 0, 0, 65537, 0, 268435456, 3, 0, 268435456, 4, 0, 268435456, 131076, 0, 268435456, 131077, 0, 268435456, 5, 0, 0, 131075, 0, 0, 196609, 0, 268435456, 196608, 0, 0, 327680, 0, 0, 262146, 0, 0, 65542, 0, 0, 983040, 0, 0, 1048576, 0, 0, 1179650, 0, 0, 1048579, 0, 0, 1179653, 0, 0, 1048580, 0, 0, 1114112, 0, 0, 1179648, 0, 0, 1179646, 0, 0, 1114110, 0, 0, 1114111, 0, 0, 983038, 0, 0, 917502, 0, 0, 1179671, 0, 0, 1179672, 0, 0, 1245210, 0, 0, 1245211, 0, 0, 1179682, 0, 0, 1245207, 0, 0, 1048586, 0, 0, 1048585, 0, 0, 1048584, 0, 0, 1048583, 0, 0, 1179656, 0, 0, 1048582, 0, 0, 1114118, 0, 0, 1179654, 0, 0, 1179655, 0, 0, 917506, 0, 0, 1179677, 0, 0, 1048599, 0, 0, 327701, 65536, 0, 786435, 0, 268435456, 851971, 0, 0, 917507, 0, 0, 917510, 0, 0, 983048, 0, 0, 917505, 0, 0, 786432, 0, 0, 786434, 0, 0, 983047, 0, 268435456, 917509, 0, 268435456, 262148, 0, 268435456, 262173, 0, 0, 262174, 0, 268435456, 196639, 0, 0, 131099, 0, 0, 196635, 0, 0, 196636, 0, 0, 131102, 0, 0, 1114122, 0, 0, 1048591, 0, 0, 262160, 262146, 0, 458782, 0, 0, 524319, 0, 0, 524320, 0, 0, 589856, 0, 0, 589855, 0, 0, 720927, 0, 0, 720926, 0, 0, 458784, 0, 0, 327711, 0, 268435456, 393245, 0, 0, 327710, 0, 268435456, 1114123, 0, 268435456, 1114124, 0, 0, 1114125, 0, 268435456, 1114126, 0, 0, 1114129, 0, 0, 1048589, 0, 268435456, 1048588, 0, 0, 1048592, 0, 0, 1114128, 0, 268435456, 1179661, 0, 268435456, 24, 0, 268435456, 23, 0, 0, 22, 0, 268435456, 21, 0, 0, 20, 0, 268435456, 19, 0, 268435456, 18, 0, 268435456, -65521, 0, 268435456, 15, 0, 268435456, 9, 0, 268435456, 8, 0, 268435456, 11, 0, 268435456, 12, 0, 268435456, 65549, 0, 268435456, 65554, 0, 268435456, 65557, 0, 268435456, 17, 0, 0, -65520, 0, 0, -65523, 0, 0, 7, 0, 0, 10, 0, 0, 131079, 0, 0, 131096, 0, 0, 786441, 65536, 0, 851978, 65536, 0, 393234, 65536, 0, 589847, 65536, 0, 393240, 65536, 0, 851986, 65536, 0, 851987, 65536, 0, 720918, 65536, 0, 262157, 65536, 0, 851982, 65536, 0, 524302, 65536, 0, 327690, 65536, 0, 262163, 65536, 0, 786452, 65536, 0, 655379, 65536, 0, 589844, 65536, 0, 786448, 65536, 0, 786447, 65536, 0, 786444, 65536, 0, 720908, 65536, 0, 393225, 65536, 0, 458765, 65536, 0, 524303, 65536, 0, 720910, 65536, 0, 524306, 65536, 0, 393236, 65536, 0, 851991, 65536, 0, 720922, 65536, 0, 655387, 65536, 0, 393222, 65536, 0, 458757, 65536, 0, 327688, 65536, 0, 786439, 65536, 0, 524304, 262146, 0, 458768, 262146, 0, 393232, 262146, 0, 327696, 262146, 0, 196624, 262146, 0, 196616, 262146, 0, 196617, 262146, 0, 196618, 262146, 0, 196619, 262146, 0, 196620, 262146, 0, 196621, 262146, 0, 196622, 262146, 0, 196623, 262146, 0, 196625, 262146, 0, 196626, 262146, 0, 196627, 262146, 0, 196628, 262146, 0, 196629, 262146, 0, 196630, 262146, 0, 196631, 262146, 0, 589840, 65536, 0, 327695, 65536, 0, 1114132, 0, 0, 1048597, 0, 0, 1048596, 0, 0, 1048595, 0, 0, 1114131, 0, 0, 1048594, 0, 0, 1114134, 0, 268435456, 393215, 0, 0, 327678, 0, 0, 1048598, 0, 0, 786464, 0, 0, 786465, 0, 0, 1179676, 0, 0, 1179678, 0, 0, 1179679, 0, 0, 1179680, 0, 0, 1114137, 0, 268435456, 851999, 0, 268435456, 851998, 0, 0, 1114141, 0, 0, 1114140, 0, 0, 1048601, 0, 0, 1114138, 0, 268435456, 1114139, 0, 268435456, 852000, 0, 268435456, 1048607, 3, 0, 1048606, 3, 0, 983070, 3, 0, 983071, 3, 0)
 
 [node name="Camera2D" type="Camera2D" parent="."]
 anchor_mode = 0
 
 [node name="PlayerCharacterBody" parent="." instance=ExtResource("3_w8p5n")]
 position = Vector2(64, 128)
+script = ExtResource("4_alhgp")
 
 [node name="Ball" parent="." instance=ExtResource("4_sq8qs")]
 position = Vector2(192, 112)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(336, 128)
+texture = ExtResource("5_ocsu5")
+hframes = 2
+vframes = 2
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite2D"]
+libraries = {
+"": SubResource("AnimationLibrary_reotc")
+}
+
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
+layer = 100
+visible = false
+
+[node name="BossBar" type="ProgressBar" parent="CanvasLayer2"]
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -16.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 184.0
+grow_horizontal = 0
+theme_override_styles/background = SubResource("StyleBoxFlat_i1jo5")
+theme_override_styles/fill = SubResource("StyleBoxFlat_yy5cf")
+value = 50.0
+fill_mode = 3
+show_percentage = false

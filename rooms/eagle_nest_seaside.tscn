@@ -3,3 +3,6 @@
 [ext_resource type="PackedScene" uid="uid://bvrbk01y2vihp" path="res://rooms/eagle_nest.tscn" id="1_msbce"]
 
 [node name="Node2D2" instance=ExtResource("1_msbce")]
+
+[node name="BossBar" parent="CanvasLayer2" index="0"]
+show_percentage = false

@@ -6,6 +6,7 @@ var progress = {
 	"forest_1_solved" = false,
 	"forest_2_solved" = false,
 	"flowers_phase" = 0,
+	"golf_cleared" = false,
 	"frogs_obtained" = 0,
 }
 
@@ -116,6 +117,7 @@ func read_save():
 	progress.forest_1_solved = config.get_value("Progress", "forest_1_solved", false)
 	progress.forest_2_solved = config.get_value("Progress", "forest_2_solved", false)
 	progress.forest_2_solved = config.get_value("Progress", "flower_phase", 0)
+	progress.forest_2_solved = config.get_value("Progress", "golf_cleared", false)
 	progress.frogs_obtained  = config.get_value("Progress", "frogs_obtained", 0)
 	
 	

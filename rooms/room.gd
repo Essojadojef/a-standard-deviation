@@ -122,6 +122,7 @@ func is_outside_room(node: Node2D) -> bool:
 func perform_room_transition(room_transition_character: Entity):
 	Globals.room_transition = true
 	get_tree().paused = true
+	set_physics_process(false)
 	
 	var exit: int
 	if room_transition_character.position.x < playable_area.position.x:

@@ -60,10 +60,13 @@ func _physics_process(delta: float) -> void:
 	var direction := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	
 	if direction and player_control:
-		velocity = velocity.lerp(direction * movement_speed, .75)
+		velocity = velocity.lerp(direction * movement_speed, .25)
 		forward_vector = direction
 	else:
-		velocity = velocity.lerp(Vector2(), .75)
+		velocity = velocity.lerp(Vector2(), .5)
+	
+	if !direction and !$AttackTimer.time_left:
+		forward_vector = get_cursor_direction()
 	
 	var forw_vector_angle = snapped(forward_vector.angle(), PI / 2)
 	
@@ -125,7 +128,10 @@ func attack():
 	$Hurtbox.add_to_group("hurtbox")
 	$Hurtbox.show()
 	$Hurtbox/CollisionPolygon2D.disabled = false
-	get_tree().create_timer(.125, false).timeout.connect(stop_attack)
+	$AttackTimer.start(.125)
+
+func _on_attack_timer_timeout() -> void:
+	stop_attack()
 
 func stop_attack():
 	$Hurtbox.hide()
@@ -147,7 +153,6 @@ func shoot():
 func _on_hurtbox_body_entered(body: Node2D) -> void:
 	if body == self: return
 	
-	print(abs(body.color_shift - color_shift))
 	if body is Entity and abs(body.color_shift - color_shift) < .1:
 		body.damage_received.emit(forward_vector)
 
@@ -158,3 +163,4 @@ func _on_damage_received(hit_direction: Vector2):
 	#velocity = hit_direction * 300 * pow(2, color_shift * 1.5)
 	velocity = hit_direction * 300 * (randf() + randf())
 	stop_attack()
+
