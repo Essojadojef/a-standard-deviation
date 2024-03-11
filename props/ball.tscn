@@ -1,0 +1,61 @@
+[gd_scene load_steps=5 format=3 uid="uid://dubrgqdjfgpjv"]
+
+[ext_resource type="Texture2D" uid="uid://d0e6nlsk33i3y" path="res://props/ball_golf.png" id="1_5utqd"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_1utq4"]
+blend_mode = 1
+
+[sub_resource type="GDScript" id="GDScript_a3g6k"]
+script/source = "extends Entity
+
+@export_range(0, 1)
+var base_level: float
+@export_range(0, 1)
+var peak_level: float = 1
+@export
+var color_shift: float = 0
+
+var velocity_field : float = 0
+
+var hitstun:float
+
+func _ready() -> void:
+	damage_received.connect(_on_damage_received)
+
+func _process(delta: float) -> void:
+	modulate = Globals.color_spectrum.sample(color_shift / 2 + .5)
+	modulate.a = peak_level
+
+func _physics_process(delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
+	
+	velocity = velocity.lerp(Vector2(), .3)
+
+	move_and_slide()
+
+func _on_damage_received(hit_direction: Vector2):
+	#hit_direction = Vector2.RIGHT.rotated(snapped(hit_direction.angle(), PI / 4)) # only + or x movement
+	hit_direction = hit_direction.rotated(color_shift * PI * .133 * (randf() - .5))
+	#velocity = hit_direction.normalized() * (2000 * ease(color_shift + .5, -2) + 100)
+	velocity = hit_direction.normalized() * 2000 * (randf() + randf())
+	#velocity = hit_direction.normalized() * (500 * pow(cos(PI * color_shift), 1.5) + 200)
+	#velocity = hit_direction.normalized() * 2000
+"
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_m3ge0"]
+radius = 4.0
+
+[node name="Ball" type="CharacterBody2D"]
+material = SubResource("CanvasItemMaterial_1utq4")
+collision_mask = 2
+motion_mode = 1
+script = SubResource("GDScript_a3g6k")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+use_parent_material = true
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_5utqd")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_m3ge0")
