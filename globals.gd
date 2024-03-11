@@ -28,11 +28,14 @@ var nodes_clone_group: Dictionary
 var process_groups: Array = ["player"]
 
 func _ready() -> void:
-	add_child(gui)
 	add_child(bgm_player)
 	bgm_player.bus = "BGM"
 	bgm_player.process_mode = Node.PROCESS_MODE_ALWAYS
 	play_bgm(preload("res://music/Seaside exploration r2.ogg"))
+
+func setup_gui():
+	if !gui.is_inside_tree():
+		add_child(gui)
 
 func play_bgm(stream: AudioStream):
 	if bgm_player.stream == stream: return

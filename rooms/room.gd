@@ -19,6 +19,7 @@ func get_entities():
 	return get_children().filter(func(child): return child is Entity)
 
 func _ready() -> void:
+	Globals.setup_gui()
 	Globals.play_bgm(bgm)
 	
 	for i in get_entities():

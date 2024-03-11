@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="spectra"
-run/main_scene="res://rooms/seaside_1.tscn"
+run/main_scene="res://main_menu.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[audio]
+
+driver/output_latency.web=90
 
 [autoload]
 
@@ -24,10 +28,6 @@ Globals="*res://globals.gd"
 window/size/viewport_width=512
 window/size/viewport_height=288
 window/stretch/mode="canvas_items"
-
-[editor]
-
-import/use_multiple_threads=false
 
 [file_customization]
 
@@ -79,6 +79,11 @@ action={
 "events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(352, 20),"global_position":Vector2(356, 61),"factor":1.0,"button_index":1,"canceled":false,"pressed":true,"double_click":false,"script":null)
 ]
 }
+alt_action={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":2,"position":Vector2(195, 12),"global_position":Vector2(199, 53),"factor":1.0,"button_index":2,"canceled":false,"pressed":true,"double_click":false,"script":null)
+]
+}
 
 [layer_names]
 
@@ -94,5 +99,6 @@ action={
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
+renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0, 0, 0, 1)
