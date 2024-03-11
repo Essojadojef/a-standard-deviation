@@ -1,7 +1,8 @@
-[gd_scene load_steps=12 format=3 uid="uid://bvrbk01y2vihp"]
+[gd_scene load_steps=14 format=3 uid="uid://bvrbk01y2vihp"]
 
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="1_4unyp"]
-[ext_resource type="AudioStream" uid="uid://13wxqsl7mshh" path="res://music/Lab Exterior.ogg" id="1_vancm"]
+[ext_resource type="Script" path="res://rooms/eagle_nest.gd" id="1_s3rmn"]
+[ext_resource type="AudioStream" uid="uid://bexm8fdhm6amh" path="res://music/Jungle Jam.ogg" id="2_wujsh"]
 [ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="2_wwfu1"]
 [ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/frog.tscn" id="4_kaibb"]
 [ext_resource type="PackedScene" uid="uid://uu68lsrn1piy" path="res://enemies/eaglefly.tscn" id="5_1qhmi"]
@@ -9,17 +10,6 @@
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
 blend_mode = 1
-
-[sub_resource type="GDScript" id="GDScript_mod5g"]
-script/source = "extends Room
-
-func neighbour_rooms(side: int) -> String:
-	match side:
-		SIDE_TOP: return \"res://rooms/dungeon_entrance_door.tscn\"
-		SIDE_RIGHT: return \"res://rooms/forest_maze.tscn\"
-		SIDE_BOTTOM: return \"res://rooms/forest_0_crossing.tscn\"
-	return super.neighbour_rooms(side)
-"
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_xkokf"]
 size = Vector2(224, 224)
@@ -30,10 +20,28 @@ size = Vector2(160, 32)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fop08"]
 size = Vector2(160, 32)
 
-[node name="Node2D" type="Node2D"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_418en"]
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(1, 1, 1, 1)
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+anti_aliasing = false
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hxir4"]
+bg_color = Color(1, 0, 0, 1)
+border_color = Color(1, 1, 1, 1)
+anti_aliasing = false
+
+[node name="Node2D2" type="Node2D"]
 material = SubResource("CanvasItemMaterial_328yp")
-script = SubResource("GDScript_mod5g")
-bgm = ExtResource("1_vancm")
+script = ExtResource("1_s3rmn")
+bgm = ExtResource("2_wujsh")
 
 [node name="TileMap" type="TileMap" parent="."]
 modulate = Color(0.501961, 0.501961, 0.501961, 1)
@@ -91,3 +99,19 @@ base_level = 1.0
 
 [node name="Eaglefly" parent="." instance=ExtResource("5_1qhmi")]
 position = Vector2(256, 64)
+
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="BossBar" type="ProgressBar" parent="CanvasLayer2"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -136.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = 35.0
+grow_horizontal = 0
+theme_override_styles/background = SubResource("StyleBoxFlat_418en")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hxir4")
+value = 50.0

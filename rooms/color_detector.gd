@@ -1,5 +1,7 @@
 extends Room
 
-func _ready() -> void:
-	spawn_clones($PlayerCharacterBody, clone_multiplier, 1)
-	spawn_clones($Flower, clone_multiplier, 1)
+func neighbour_rooms(side: int) -> String:
+	match side:
+		SIDE_TOP: return "res://rooms/eagle_nest_topright.tscn"
+		SIDE_BOTTOM: return "res://rooms/forest_maze.tscn"
+	return super.neighbour_rooms(side)

@@ -29,7 +29,7 @@ func _physics_process(delta: float) -> void:
 
 func neighbour_rooms(side: int) -> String:
 	match side:
-		SIDE_TOP: return \"res://rooms/eagle_nest.tscn\"
+		SIDE_TOP: return \"res://rooms/eagle_nest_topleft.tscn\"
 		SIDE_BOTTOM: return \"res://rooms/forest_1.tscn\"
 	return super.neighbour_rooms(side)
 

@@ -159,6 +159,7 @@ func perform_room_transition(room_transition_character: Entity):
 	
 	await tween.finished
 	
+	Globals.last_room_filepath = scene_file_path
 	Globals.player_position = room_transition_character.position
 	Globals.room_transition_direction = pan_direction
 	queue_free()

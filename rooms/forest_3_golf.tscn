@@ -14,8 +14,7 @@ script/source = "extends Room
 func neighbour_rooms(side: int) -> String:
 	match side:
 		SIDE_LEFT: return \"res://rooms/forest_0_crossing.tscn\"
-		SIDE_TOP: return \"res://rooms/dungeon_entrance_forcefield.tscn\"
-		SIDE_BOTTOM: return \"res://rooms/seaside_2.tscn\"
+		SIDE_BOTTOM: return \"res://rooms/eagle_nest_seaside.tscn\"
 	return super.neighbour_rooms(side)
 
 "

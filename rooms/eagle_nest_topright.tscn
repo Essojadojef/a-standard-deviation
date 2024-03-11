@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3 uid="uid://bvnfflkbx5ywj"]
+
+[ext_resource type="PackedScene" uid="uid://bvrbk01y2vihp" path="res://rooms/eagle_nest.tscn" id="1_0fbom"]
+
+[node name="Node2D2" instance=ExtResource("1_0fbom")]
