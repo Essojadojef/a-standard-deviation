@@ -1,6 +1,5 @@
 extends Room
 
-@export
 var boss_max_damage:int = 7 * 5
 @export
 var frog_in_distress_id:int
@@ -15,7 +14,7 @@ func _ready() -> void:
 			frogs_saved.append(i)
 		
 	
-	boss_max_damage += 7 * (5 + frogs_saved.size() * 2)
+	boss_max_damage = 7 * (4 + frogs_saved.size() * 2)
 	
 	if frogs_saved.has(frog_in_distress_id):
 		remove_child($Frog)

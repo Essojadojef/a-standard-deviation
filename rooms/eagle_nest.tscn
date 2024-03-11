@@ -115,3 +115,4 @@ grow_horizontal = 0
 theme_override_styles/background = SubResource("StyleBoxFlat_418en")
 theme_override_styles/fill = SubResource("StyleBoxFlat_hxir4")
 value = 50.0
+show_percentage = false

@@ -36,7 +36,7 @@ func _ready() -> void:
 func neighbour_rooms(side: int) -> String:
 	match side:
 		SIDE_LEFT: return \"res://rooms/forest_0_crossing.tscn\"
-		SIDE_BOTTOM: return \"res://rooms/eagle_nest_seaside.tscn\"
+		SIDE_RIGHT: return \"res://rooms/eagle_nest_seaside.tscn\"
 	return super.neighbour_rooms(side)
 
 func setup_clone(node: Node2D):

@@ -41,8 +41,16 @@ layer = -9
 color = Color(0, 0, 0, 0.501961)
 polygon = PackedVector2Array(0, 0, 0, 320, 512, 320, 512, 0)
 
-[node name="CharacterBody2D" parent="." instance=ExtResource("6_3pba2")]
+[node name="FrogGreen" parent="." instance=ExtResource("6_3pba2")]
 position = Vector2(296, 112)
+
+[node name="FrogRed" parent="." instance=ExtResource("6_3pba2")]
+position = Vector2(336, 128)
+color_shift = -0.5
+
+[node name="FrogBlue" parent="." instance=ExtResource("6_3pba2")]
+position = Vector2(336, 80)
+color_shift = 0.5
 
 [node name="PlayerCharacterBody2" parent="." instance=ExtResource("4_2xgc1")]
 position = Vector2(216, 112)

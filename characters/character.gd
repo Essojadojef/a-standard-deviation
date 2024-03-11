@@ -12,7 +12,7 @@ var color_shift: float = 0
 
 var velocity_field : float = 0
 
-var forward_vector: Vector2
+var forward_vector: Vector2 = Vector2.DOWN
 
 func _process(delta: float) -> void:
 	#modulate = Color().from_hsv(clamp(shift + 1, 0, 2) / 3, 1.0 - base_level, peak_level)

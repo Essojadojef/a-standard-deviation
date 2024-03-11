@@ -120,4 +120,7 @@ func read_save():
 	progress.forest_2_solved = config.get_value("Progress", "golf_cleared", false)
 	progress.frogs_obtained  = config.get_value("Progress", "frogs_obtained", 0)
 	
-	
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		write_save()
