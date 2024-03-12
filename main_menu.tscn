@@ -1,5 +1,6 @@
-[gd_scene load_steps=26 format=3 uid="uid://dg1ej1mcfp66g"]
+[gd_scene load_steps=27 format=3 uid="uid://dg1ej1mcfp66g"]
 
+[ext_resource type="FontVariation" uid="uid://dehhud25f044g" path="res://fonts/text.tres" id="1_m7b0l"]
 [ext_resource type="Texture2D" uid="uid://e2l1gag5j0sc" path="res://island.png" id="1_sxk15"]
 [ext_resource type="Texture2D" uid="uid://gpnsci2k61oi" path="res://stars.png" id="2_e4v41"]
 
@@ -17,6 +18,7 @@ corner_radius_bottom_left = 1
 anti_aliasing = false
 
 [sub_resource type="Theme" id="Theme_3xud2"]
+default_font = ExtResource("1_m7b0l")
 Button/styles/normal = SubResource("StyleBoxFlat_0lkh8")
 CheckButton/styles/normal = SubResource("StyleBoxFlat_0lkh8")
 CheckButton/styles/pressed = SubResource("StyleBoxFlat_0lkh8")

@@ -1,0 +1,17 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://dehhud25f044g"]
+
+[ext_resource type="FontFile" uid="uid://c6aq17myvjvps" path="res://fonts/Salsa/Salsa-Regular.ttf" id="1_axrks"]
+
+[resource]
+base_font = ExtResource("1_axrks")
+variation_opentype = {
+1112425285: -20,
+1229866573: 80,
+1397768515: null,
+1769234796: null,
+2003265652: 500
+}
+spacing_glyph = 1
+spacing_space = 2
+spacing_top = 2
+spacing_bottom = 2
