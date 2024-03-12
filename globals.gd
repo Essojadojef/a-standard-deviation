@@ -124,3 +124,10 @@ func read_save():
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		write_save()
+
+# utility functions
+
+func sample_colors(array: Array, base_color := Color()) -> Color:
+	for i in array:
+		base_color += Globals.color_spectrum.sample(i / 2 + .5).srgb_to_linear()
+	return base_color.linear_to_srgb()

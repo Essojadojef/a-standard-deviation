@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://qmv25xk5f7k0"]
+[gd_scene load_steps=12 format=3 uid="uid://qmv25xk5f7k0"]
 
 [ext_resource type="Script" path="res://gui.gd" id="1_h60fh"]
 [ext_resource type="Texture2D" uid="uid://dgtnowigrvc0g" path="res://gui.png" id="1_r0ecg"]
@@ -8,11 +8,15 @@
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hhe42"]
 atlas = ExtResource("1_r0ecg")
-region = Rect2(8, 8, 16, 16)
+region = Rect2(16, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_trxts"]
+atlas = ExtResource("1_r0ecg")
+region = Rect2(0, 48, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ikbqd"]
 atlas = ExtResource("1_r0ecg")
-region = Rect2(192, 0, 64, 64)
+region = Rect2(0, 0, 48, 48)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_568df"]
 noise_type = 3
@@ -42,97 +46,172 @@ shader_parameter/noise = SubResource("NoiseTexture3D_ornw8")
 layer = 100
 script = ExtResource("1_h60fh")
 
-[node name="Sprite2D" type="Control" parent="."]
+[node name="Hearts" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
 offset_left = 40.0
 offset_right = 40.0
 
-[node name="1" type="TextureRect" parent="Sprite2D"]
-layout_mode = 0
+[node name="1" type="TextureRect" parent="Hearts"]
 offset_left = 8.0
 offset_top = 8.0
 offset_right = 24.0
 offset_bottom = 24.0
 texture = SubResource("AtlasTexture_hhe42")
 
-[node name="2" type="TextureRect" parent="Sprite2D"]
-layout_mode = 0
+[node name="2" type="TextureRect" parent="Hearts"]
 offset_left = 24.0
 offset_top = 8.0
 offset_right = 40.0
 offset_bottom = 24.0
 texture = SubResource("AtlasTexture_hhe42")
 
-[node name="3" type="TextureRect" parent="Sprite2D"]
-layout_mode = 0
+[node name="3" type="TextureRect" parent="Hearts"]
 offset_left = 40.0
 offset_top = 8.0
 offset_right = 56.0
 offset_bottom = 24.0
 texture = SubResource("AtlasTexture_hhe42")
 
-[node name="4" type="TextureRect" parent="Sprite2D"]
-layout_mode = 0
+[node name="4" type="TextureRect" parent="Hearts"]
 offset_left = 56.0
 offset_top = 8.0
 offset_right = 72.0
 offset_bottom = 24.0
 texture = SubResource("AtlasTexture_hhe42")
 
-[node name="5" type="TextureRect" parent="Sprite2D"]
-layout_mode = 0
+[node name="5" type="TextureRect" parent="Hearts"]
 offset_left = 72.0
 offset_top = 8.0
 offset_right = 88.0
 offset_bottom = 24.0
 texture = SubResource("AtlasTexture_hhe42")
 
-[node name="6" type="TextureRect" parent="Sprite2D"]
-layout_mode = 0
+[node name="6" type="TextureRect" parent="Hearts"]
 offset_left = 8.0
 offset_top = 24.0
 offset_right = 24.0
 offset_bottom = 40.0
 texture = SubResource("AtlasTexture_hhe42")
 
-[node name="7" type="TextureRect" parent="Sprite2D"]
-layout_mode = 0
+[node name="7" type="TextureRect" parent="Hearts"]
 offset_left = 24.0
 offset_top = 24.0
 offset_right = 40.0
 offset_bottom = 40.0
 texture = SubResource("AtlasTexture_hhe42")
 
-[node name="8" type="TextureRect" parent="Sprite2D"]
-layout_mode = 0
+[node name="8" type="TextureRect" parent="Hearts"]
 offset_left = 40.0
 offset_top = 24.0
 offset_right = 56.0
 offset_bottom = 40.0
 texture = SubResource("AtlasTexture_hhe42")
 
-[node name="9" type="TextureRect" parent="Sprite2D"]
-layout_mode = 0
+[node name="9" type="TextureRect" parent="Hearts"]
 offset_left = 56.0
 offset_top = 24.0
 offset_right = 72.0
 offset_bottom = 40.0
 texture = SubResource("AtlasTexture_hhe42")
 
-[node name="10" type="TextureRect" parent="Sprite2D"]
-layout_mode = 0
+[node name="10" type="TextureRect" parent="Hearts"]
 offset_left = 72.0
 offset_top = 24.0
 offset_right = 88.0
 offset_bottom = 40.0
 texture = SubResource("AtlasTexture_hhe42")
+
+[node name="HeartsBorder" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 40.0
+offset_right = 40.0
+
+[node name="1" type="TextureRect" parent="HeartsBorder"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 24.0
+offset_bottom = 24.0
+texture = SubResource("AtlasTexture_trxts")
+
+[node name="2" type="TextureRect" parent="HeartsBorder"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 8.0
+offset_right = 40.0
+offset_bottom = 24.0
+texture = SubResource("AtlasTexture_trxts")
+
+[node name="3" type="TextureRect" parent="HeartsBorder"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 8.0
+offset_right = 56.0
+offset_bottom = 24.0
+texture = SubResource("AtlasTexture_trxts")
+
+[node name="4" type="TextureRect" parent="HeartsBorder"]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 8.0
+offset_right = 72.0
+offset_bottom = 24.0
+texture = SubResource("AtlasTexture_trxts")
+
+[node name="5" type="TextureRect" parent="HeartsBorder"]
+layout_mode = 0
+offset_left = 72.0
+offset_top = 8.0
+offset_right = 88.0
+offset_bottom = 24.0
+texture = SubResource("AtlasTexture_trxts")
+
+[node name="6" type="TextureRect" parent="HeartsBorder"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 24.0
+offset_right = 24.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_trxts")
+
+[node name="7" type="TextureRect" parent="HeartsBorder"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_trxts")
+
+[node name="8" type="TextureRect" parent="HeartsBorder"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 24.0
+offset_right = 56.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_trxts")
+
+[node name="9" type="TextureRect" parent="HeartsBorder"]
+layout_mode = 0
+offset_left = 56.0
+offset_top = 24.0
+offset_right = 72.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_trxts")
+
+[node name="10" type="TextureRect" parent="HeartsBorder"]
+layout_mode = 0
+offset_left = 72.0
+offset_top = 24.0
+offset_right = 88.0
+offset_bottom = 40.0
+texture = SubResource("AtlasTexture_trxts")
 
 [node name="SpectrumIndicator" type="TextureRect" parent="."]
-offset_left = -16.0
 offset_right = 48.0
-offset_bottom = 64.0
-pivot_offset = Vector2(40.5, 23.5)
+offset_bottom = 48.0
+pivot_offset = Vector2(23.5, 23.5)
 texture = SubResource("AtlasTexture_ikbqd")
 script = ExtResource("2_x3his")
 

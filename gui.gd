@@ -1,5 +1,41 @@
 extends CanvasLayer
 
+var max_health = 3
+
+func _process(delta: float) -> void:
+	var current_room: Room
+	if get_tree().current_scene is Room:
+		current_room = get_tree().current_scene
+	else:
+		return
+	
+	var characters_health: Dictionary = {}
+	for i in get_tree().get_nodes_in_group("player"):
+		characters_health[i.color_shift] = max_health - i.damage
+	
+	var frogs_obtained: int = 0
+	for i in 3:
+		if Globals.progress.frogs_obtained & (1 << i):
+			frogs_obtained += 1
+	
+	max_health = 3 + frogs_obtained
+	
+	for i in 10:
+		process_heart(i, characters_health)
+	
+
+func process_heart(index: int, characters_health: Dictionary):
+	var heart_sprite: TextureRect = $Hearts.get_child(index)
+	var heart_border: TextureRect = $HeartsBorder.get_child(index)
+	heart_sprite.visible = index < max_health
+	heart_border.visible = index < max_health
+	
+	var heart_colors = []
+	for i in characters_health:
+		if characters_health[i] > index:
+			heart_colors.append(i)
+	heart_sprite.modulate = Globals.sample_colors(heart_colors)
+
 func _on_player_character_defeated(character: Entity):
 	var color = Globals.color_spectrum.sample(character.color_shift / 2 + .5)
 	var viewport_size:Vector2 = $Waves.get_viewport_rect().size
