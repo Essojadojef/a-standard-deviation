@@ -104,6 +104,7 @@ func _on_character_timer_timeout() -> void:
 
 func perform_cutscene():
 	$SpaceBg.show()
+	$Control.show()
 	$Seaside.hide()
 	$SubViewportContainer.hide()
 	
@@ -1011,7 +1012,6 @@ grow_vertical = 2
 script = SubResource("GDScript_1cr3o")
 
 [node name="SpaceBg" type="Polygon2D" parent="."]
-visible = false
 texture_repeat = 2
 texture = ExtResource("1_0lrxf")
 polygon = PackedVector2Array(0, 0, 512, 0, 512, 288, 0, 288)
@@ -1137,7 +1137,6 @@ position = Vector2(-64, 192)
 [node name="PlayerCharacterBody2" parent="Seaside" index="6"]
 position = Vector2(256, 128)
 rotation = 1.5708
-base_level = 1.0
 
 [node name="PlayerCharacterBody" parent="Seaside" index="7"]
 position = Vector2(320, 104)
