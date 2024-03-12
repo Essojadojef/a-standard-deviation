@@ -23,6 +23,9 @@ var color_spectrum: Gradient = preload("res://color_spectrum_oklab.tres")
 var gui = preload("res://gui.tscn").instantiate()
 
 var bgm_player: = AudioStreamPlayer.new()
+var bgm_tween: Tween
+var target_bgm_stream: AudioStream
+
 
 var clone_groups: Dictionary
 var clone_spread: Dictionary
@@ -48,25 +51,36 @@ func play_bgm(stream: AudioStream):
 	bgm_player.play()
 
 func bgm_smooth_change(stream: AudioStream, time:float) -> void:
+	if target_bgm_stream == stream: return
+	target_bgm_stream = stream
+	
+	if bgm_tween:
+		bgm_tween.kill()
+	
 	await bgm_fade(.001, time / 2)
-	play_bgm(stream)
+	play_bgm(target_bgm_stream)
 	await bgm_fade(1, time / 2)
+	
 
 func bgm_fade(target_volume: float, time: float) -> void:
 	target_volume = linear_to_db(target_volume)
-	var tween = create_tween()
-	tween.set_trans(Tween.TRANS_EXPO)
-	tween.set_ease(
+	bgm_tween = create_tween()
+	bgm_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	bgm_tween.set_trans(Tween.TRANS_EXPO)
+	bgm_tween.set_ease(
 		Tween.EASE_IN if target_volume < bgm_player.volume_db else
 		Tween.EASE_OUT
 	)
 	
-	tween.tween_property(bgm_player, "volume_db", target_volume, time)
-	await tween.finished
+	bgm_tween.tween_property(bgm_player, "volume_db", target_volume, time)
+	await bgm_tween.finished
 
 func _process(delta: float) -> void:
+	
 	for i in process_groups:
 		process_group(i)
+	
+
 
 func process_group(group_name: String) -> void:
 	var group: Array = get_tree().get_nodes_in_group(group_name)

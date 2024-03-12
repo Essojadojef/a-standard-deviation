@@ -20,7 +20,7 @@ func get_entities():
 
 func _ready() -> void:
 	Globals.setup_gui()
-	Globals.play_bgm(bgm)
+	Globals.bgm_smooth_change(bgm, 2)
 	
 	for i in get_entities():
 		i.hide()
@@ -123,6 +123,8 @@ func perform_room_transition(room_transition_character: Entity):
 	Globals.room_transition = true
 	get_tree().paused = true
 	set_physics_process(false)
+	
+	Globals.write_save()
 	
 	var exit: int
 	if room_transition_character.position.x < playable_area.position.x:
