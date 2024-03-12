@@ -13,6 +13,8 @@ var color_shift: float = 0
 var velocity_field : float = 0
 
 var forward_vector: Vector2
+@export
+var follow_cursor = false
 
 var hitstun: float
 
@@ -65,7 +67,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity = velocity.lerp(Vector2(), .5)
 	
-	if !direction and !$AttackTimer.time_left:
+	if follow_cursor and !direction and !$AttackTimer.time_left:
 		forward_vector = get_cursor_direction()
 	
 	var forw_vector_angle = snapped(forward_vector.angle(), PI / 2)
@@ -97,7 +99,7 @@ func _physics_process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("action"):
 		attack()
-	if event.is_action_pressed("commute_formation"):
+	if Globals.cheats_enabled and event.is_action_pressed("commute_formation"):
 		focus_commute()
 
 func focus_commute():

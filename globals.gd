@@ -11,6 +11,8 @@ var progress = {
 	"cutscenes_seen" = 0,
 }
 
+var cheats_enabled = false
+
 var room_transition: bool = false
 var room_transition_direction: Vector2
 var last_room_filepath: String
