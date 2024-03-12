@@ -8,6 +8,7 @@ var progress = {
 	"flowers_phase" = 0,
 	"golf_cleared" = false,
 	"frogs_obtained" = 0,
+	"cutscenes_seen" = 0,
 }
 
 var room_transition: bool = false
@@ -17,7 +18,7 @@ var player_position: Vector2
 
 signal room_transition_finished(prev_room, direction)
 
-var color_spectrum: Gradient = preload("res://color_spectrum_rgb.tres")
+var color_spectrum: Gradient = preload("res://color_spectrum_oklab.tres")
 
 var gui = preload("res://gui.tscn").instantiate()
 
@@ -136,6 +137,7 @@ func read_save():
 	progress.forest_2_solved = config.get_value("Progress", "flower_phase", 0)
 	progress.forest_2_solved = config.get_value("Progress", "golf_cleared", false)
 	progress.frogs_obtained  = config.get_value("Progress", "frogs_obtained", 0)
+	progress.frogs_obtained  = config.get_value("Progress", "cutscenes_seen", 0)
 	
 
 func _input(event: InputEvent) -> void:

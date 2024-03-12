@@ -215,7 +215,10 @@ script/source = "extends Button
 
 func _pressed() -> void:
 	Globals.read_save()
-	get_tree().change_scene_to_file(\"res://rooms/seaside_1.tscn\")
+	if Globals.progress.cutscenes_seen & 1:
+		get_tree().change_scene_to_file(\"res://rooms/seaside_1.tscn\")
+	else:
+		get_tree().change_scene_to_file(\"res://rooms/intro_cutscene.tscn\")
 "
 
 [sub_resource type="GDScript" id="GDScript_bu22k"]

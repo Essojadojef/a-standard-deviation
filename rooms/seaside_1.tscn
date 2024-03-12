@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://dk87texc5wrd1"]
+[gd_scene load_steps=12 format=3 uid="uid://dk87texc5wrd1"]
 
 [ext_resource type="Script" path="res://rooms/seaside_1.gd" id="1_7abdk"]
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="2_hcgjn"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://lkb2qg55u2ak" path="res://characters/captain.tscn" id="4_2xgc1"]
 [ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/frog.tscn" id="6_3pba2"]
 [ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="7_hemwf"]
+[ext_resource type="Texture2D" uid="uid://cih35alur8h0u" path="res://enemies/defeat.png" id="8_14q2b"]
 [ext_resource type="Texture2D" uid="uid://ck7aai1p7pghb" path="res://props/crashed_spaceship.png" id="8_ctckr"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
@@ -42,18 +43,19 @@ color = Color(0, 0, 0, 0.501961)
 polygon = PackedVector2Array(0, 0, 0, 320, 512, 320, 512, 0)
 
 [node name="FrogGreen" parent="." instance=ExtResource("6_3pba2")]
-position = Vector2(296, 112)
+position = Vector2(296, 144)
 
 [node name="FrogRed" parent="." instance=ExtResource("6_3pba2")]
-position = Vector2(336, 128)
+position = Vector2(344, 112)
 color_shift = -0.5
 
 [node name="FrogBlue" parent="." instance=ExtResource("6_3pba2")]
-position = Vector2(336, 80)
+position = Vector2(304, 80)
 color_shift = 0.5
 
 [node name="PlayerCharacterBody2" parent="." instance=ExtResource("4_2xgc1")]
-position = Vector2(216, 112)
+position = Vector2(200, 112)
+base_level = 1.0
 
 [node name="PlayerCharacterBody" parent="." instance=ExtResource("7_hemwf")]
 position = Vector2(224, 160)
@@ -72,3 +74,9 @@ texture = ExtResource("8_ctckr")
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="StaticBody2D"]
 position = Vector2(0, 160)
 shape = SubResource("WorldBoundaryShape2D_n5tb6")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(296, 168)
+texture = ExtResource("8_14q2b")
+hframes = 2
+vframes = 2

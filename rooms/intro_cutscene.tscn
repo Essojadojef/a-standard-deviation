@@ -1,0 +1,1169 @@
+[gd_scene load_steps=25 format=3 uid="uid://chm0qadugd1jr"]
+
+[ext_resource type="Texture2D" uid="uid://gpnsci2k61oi" path="res://stars.png" id="1_0lrxf"]
+[ext_resource type="PackedScene" uid="uid://dg1ej1mcfp66g" path="res://main_menu.tscn" id="2_8eawy"]
+[ext_resource type="Texture2D" uid="uid://e2l1gag5j0sc" path="res://island.png" id="3_q0282"]
+[ext_resource type="Texture2D" uid="uid://mp5gl8hyoewf" path="res://rooms/spaceship_interior.png" id="4_kr2gy"]
+[ext_resource type="Texture2D" uid="uid://cx2qjwnjbi22c" path="res://characters/captain.png" id="5_fn8ul"]
+[ext_resource type="Texture2D" uid="uid://fw6v6wihkuqw" path="res://characters/frog.png" id="6_suxbx"]
+[ext_resource type="Texture2D" uid="uid://crp5j8668yh3b" path="res://characters/norbitt.png" id="7_ytbwn"]
+[ext_resource type="FontVariation" uid="uid://dehhud25f044g" path="res://fonts/text.tres" id="8_u1lhp"]
+[ext_resource type="PackedScene" uid="uid://dk87texc5wrd1" path="res://rooms/seaside_1.tscn" id="9_gochx"]
+[ext_resource type="Script" path="res://characters/character.gd" id="10_qovb2"]
+[ext_resource type="PackedScene" uid="uid://uu68lsrn1piy" path="res://enemies/eaglefly.tscn" id="11_w2g1q"]
+
+[sub_resource type="GDScript" id="GDScript_1cr3o"]
+script/source = "extends CanvasItem
+
+var line = 0
+var text = [
+	# 0
+	
+	\"Captain, land in sight!\", \"It is it. It's the Prism Island planet!\",
+	
+	\"Aye. Received, Norbitt.\",
+	\"Oh boys, tell me if it doesn't look like a place where\" +
+	\" you would hide a treasure.\",
+	
+	\"Well, Captain.\" +
+	\" I agree that it looks like a place where one would hide a treasure...\",
+	\"But are you sure we'll find Goldsuit Gus's treasure there?\",
+	\"People say Prism Island is an exotic and dangerous planet.\",
+	
+	\"Gus lead many scientific misson to study the strange environment of that planet\",
+	\" People said no one visited this planet ever since.\",
+	
+	# 9
+	
+	\"but I think people did visit and turned around when they didn't\" +
+	\" manage to solve his puzzles.\",
+	\"That Gus loved puzzle and strange things, so if he was to hide something\" +
+	\" that planet would be the perfect spot.\",
+	
+	\"O- Kay boys. Brace yourself, we're about to enter the planet's\" +
+	\" rainbow field. Weirdness incoming.\",
+	
+	\"The rainbow field is messing with the spaceship systems.\",
+	\"I think we're going to crash.\",
+	
+	# 14
+	
+	\"Guys! Are you ok?\",
+	\"Yep. I'm just taking a break.\",
+	
+	# 16
+	
+	\"Wow, is this the beach that makes you gay?\",
+	\"No, it's the prisms. Look.\",
+	\"I've never seen such perfect surfaces naturally occourring.\",
+	
+	# 19
+	
+	\"Doc, is everything alright?\",
+	\"Hmmm...\",
+	\"I still feel ace.\",
+	
+	#\"Are you like, different character traits of Doc?\",
+	\"Arr, that's another issue we'll have to deal with.\",
+	\"Uh. Well, at lest I'm happy that we are all safe now.\",
+	
+	# 24
+	
+	\"Norbitt, change of plan. First we'll search for Doc.\" +
+	\" And then for the treasure.\",
+	\"Sure thing Captain.\"
+]
+@onready
+var label := $SubViewportContainer/CanvasLayer/Control/RichTextLabel
+@onready
+var anim_player := $AnimationPlayer
+
+@export
+var modulate_saturation: float = 0
+
+func _ready() -> void:
+	Globals.bgm_smooth_change(preload(\"res://music/Groovy Laboratory.ogg\"), 5)
+	perform_cutscene()
+
+var t: float = 0
+
+func _process(delta: float) -> void:
+	t += delta
+	modulate = Color().from_hsv(t, modulate_saturation, 1)
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"action\"):
+		progress_dialogue()
+
+func _on_character_timer_timeout() -> void:
+	if line >= text.size():
+		return
+	label.text = text[line]
+	if label.visible_characters >= 0:
+		label.visible_characters += 1
+
+func perform_cutscene():
+	$SpaceBg.show()
+	$Seaside.hide()
+	$SubViewportContainer.hide()
+	
+	anim_player.play(\"transition_1\")
+	await anim_player.animation_finished
+	
+	$SubViewportContainer.show()
+	label.visible_characters = 0
+	
+	while line < 2:
+		await get_tree().process_frame
+	
+	$SpaceBg.velocity = 100
+	$Control.hide()
+	$SpaceshipInterior.show()
+	
+	await dialogue_progressed
+	
+	$SubViewportContainer.hide()
+	
+	Globals.bgm_fade(.001, 4)
+	anim_player.play(\"transition_2\")
+	await anim_player.animation_finished
+	
+	$SubViewportContainer.show()
+	display_line(12)
+	$SpaceBg.accelerate = true
+	
+	await dialogue_progressed
+	
+	anim_player.play(\"transition_3\")
+	await anim_player.animation_finished
+	
+	$SubViewportContainer.hide()
+	$SpaceBg.hide()
+	$SpaceshipInterior.hide()
+	$Whiteout.hide()
+	modulate_saturation = 0
+	$Seaside.show()
+	
+	anim_player.play(\"seaside_1\")
+	await anim_player.animation_finished
+	
+	$SubViewportContainer.show()
+	display_line(14)
+	
+	await dialogue_progressed
+	$SubViewportContainer.hide()
+	
+	anim_player.play(\"seaside_2\")
+	await anim_player.animation_finished
+	
+	$SubViewportContainer.show()
+	display_line(16)
+	
+	await dialogue_progressed
+	$SubViewportContainer.hide()
+	
+	$Seaside/FrogGreen.base_level = 0
+	$Seaside/FrogBlue.position = $Seaside/FrogGreen.position
+	$Seaside/FrogRed.position = $Seaside/FrogGreen.position
+	
+	await get_tree().create_timer(.5).timeout
+	
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property($Seaside/FrogRed, \"position\", Vector2(-32, 0), 2).as_relative()
+	tween.tween_property($Seaside/FrogBlue, \"position\", Vector2(32, 0), 2).as_relative()
+	await tween.finished
+	
+	$SubViewportContainer.show()
+	display_line(19)
+	
+	await dialogue_progressed
+	$SubViewportContainer.hide()
+	
+	anim_player.play(\"seaside_3\")
+	await anim_player.animation_finished
+	
+	$SubViewportContainer.show()
+	display_line(24)
+	
+	await dialogue_progressed
+	$SubViewportContainer.hide()
+	
+	end_cutscene()
+
+signal dialogue_progressed()
+
+func progress_dialogue():
+	if !label.is_visible_in_tree() or !$SubViewportContainer.visible:
+		return
+	
+	if label.visible_ratio < 1:
+		label.visible_characters = -1
+		return
+	
+	match line:
+		11, 13, 15, 18, 23, 25:
+			dialogue_progressed.emit()
+			return
+	
+	display_line(line + 1)
+
+func display_line(new_line: int):
+	line = new_line
+	label.visible_characters = 0
+	
+	match line:
+		2:
+			$SpaceshipInterior/Captain.frame = 2
+		3:
+			$SpaceshipInterior/Captain.frame = 0
+			tween_jump($SpaceshipInterior/Captain, 2)
+
+func tween_jump(node:Node2D, times: int = 1):
+	var tween = create_tween()
+	for i in times:
+		tween.tween_property(node, \"position\", Vector2(0, -16), .1).as_relative()
+		tween.tween_property(node, \"position\", Vector2(0,  16), .1).as_relative()
+
+func end_cutscene():
+	if Globals.progress.cutscenes_seen & 1:
+		get_tree().change_scene_to_file(\"res://main_menu.tscn\")
+	else:
+		Globals.progress.cutscenes_seen |= 1
+		get_tree().change_scene_to_file(\"res://rooms/seaside_1.tscn\")
+"
+
+[sub_resource type="GDScript" id="GDScript_mh4qa"]
+script/source = "extends Polygon2D
+
+@export
+var accelerate:bool = false
+
+@export
+var velocity: float = 0
+
+func _process(delta: float) -> void:
+	
+	if accelerate:
+		velocity += delta * 50
+	
+	texture_offset.y += delta * velocity
+"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6amgu"]
+atlas = ExtResource("3_q0282")
+region = Rect2(288, 0, 288, 288)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hnx71"]
+content_margin_left = 32.0
+content_margin_top = 16.0
+content_margin_right = 32.0
+content_margin_bottom = 16.0
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 1, 1, 1)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_pl6b8"]
+light_mode = 1
+
+[sub_resource type="Animation" id="Animation_5efsi"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/Oblo:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(2.5, 2.5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:modulate_saturation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Whiteout:modulate")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Whiteout:visible")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Seaside/PlayerCharacterBody:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(320, 104)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Seaside/PlayerCharacterBody:rotation")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [-1.5708]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Seaside/PlayerCharacterBody2:rotation")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.5708]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Seaside/PlayerCharacterBody2:position")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(256, 128)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Seaside/FrogGreen:position")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(192, 104)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Seaside/FrogGreen:rotation")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.5708]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Seaside/FrogGreen:base_level")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/12/type = "value"
+tracks/12/imported = false
+tracks/12/enabled = true
+tracks/12/path = NodePath("Seaside/FrogRed:position")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-64, 192)]
+}
+tracks/13/type = "value"
+tracks/13/imported = false
+tracks/13/enabled = true
+tracks/13/path = NodePath("Seaside/FrogBlue:position")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-64, 192)]
+}
+tracks/14/type = "value"
+tracks/14/imported = false
+tracks/14/enabled = true
+tracks/14/path = NodePath("Seaside/Eaglefly:position")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -24)]
+}
+tracks/15/type = "value"
+tracks/15/imported = false
+tracks/15/enabled = true
+tracks/15/path = NodePath("Seaside/FrogGreen:forward_vector")
+tracks/15/interp = 1
+tracks/15/loop_wrap = true
+tracks/15/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 1)]
+}
+tracks/16/type = "value"
+tracks/16/imported = false
+tracks/16/enabled = true
+tracks/16/path = NodePath("Seaside/PlayerCharacterBody2:forward_vector")
+tracks/16/interp = 1
+tracks/16/loop_wrap = true
+tracks/16/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_n20k3"]
+resource_name = "seaside_1"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Seaside/PlayerCharacterBody:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(320, 104)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Seaside/PlayerCharacterBody:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [-1.5708]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Seaside/PlayerCharacterBody2:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1.5708]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Seaside/PlayerCharacterBody2:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(256, 128)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Seaside/FrogGreen:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(192, 104), Vector2(192, 104)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Seaside/FrogGreen:rotation")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [1.5708, 0.0]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Seaside/FrogGreen:base_level")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1.0]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Seaside/FrogRed:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-64, 192)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Seaside/FrogBlue:position")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-64, 192)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Seaside/Eaglefly:position")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -24)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Seaside/FrogGreen:forward_vector")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0, 1.4, 1.6, 1.8, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2(0, 1), Vector2(-1, 0), Vector2(1, 0), Vector2(-1, 0), Vector2(1, 0)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Seaside/PlayerCharacterBody2:forward_vector")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_adf1d"]
+resource_name = "seaside_2"
+length = 7.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Seaside/PlayerCharacterBody:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2.668, 3.248, 3.828, 4.524),
+"transitions": PackedFloat32Array(1, 0.5, 2, 1, 1),
+"update": 0,
+"values": [Vector2(320, 104), Vector2(320, 104), Vector2(312, 104), Vector2(320, 104), Vector2(320, 104)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Seaside/PlayerCharacterBody:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 2.668, 3.828, 4.524),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [-1.5708, -1.5708, 0.0, 0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Seaside/PlayerCharacterBody2:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1.508),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [1.5708, 0.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Seaside/PlayerCharacterBody2:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 3.248, 4.756),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(256, 128), Vector2(256, 128), Vector2(192, 128)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Seaside/FrogGreen:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 1.16, 1.856, 2.668, 4.9, 6.844),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(192, 104), Vector2(256, 104), Vector2(256, 104), Vector2(296, 104), Vector2(296, 104), Vector2(296, 144)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Seaside/FrogGreen:rotation")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0.0]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Seaside/FrogGreen:base_level")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1.0]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Seaside/FrogRed:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-64, 192)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Seaside/FrogBlue:position")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-64, 192)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Seaside/Eaglefly:position")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, -24)]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Seaside/PlayerCharacterBody2:forward_vector")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0, 1.508, 2.088, 2.552, 3.016, 5.336, 5.916, 6.496),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector2(-1, 0), Vector2(0, 1), Vector2(-1, 0), Vector2(1, 0), Vector2(-1, 0), Vector2(0, -1), Vector2(-1, 0), Vector2(1, 0)]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Seaside/FrogGreen:forward_vector")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0, 1.16, 1.74, 4.524),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [Vector2(1, 0), Vector2(0, 1), Vector2(1, 0), Vector2(0, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_rrbcc"]
+resource_name = "transition_1"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/Oblo:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(0.5, 0.5),
+"update": 0,
+"values": [Vector2(2.5, 2.5), Vector2(2.5, 2.5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(0.5, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0.5, 0.5)]
+}
+
+[sub_resource type="Animation" id="Animation_sprlp"]
+resource_name = "transition_2"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate_saturation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2, 4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, 1.0, 1.0]
+}
+
+[sub_resource type="Animation" id="Animation_v8l7h"]
+resource_name = "transition_3"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Whiteout:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1, 3, 4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(0.74902, 0.74902, 0.74902, 1), Color(0.74902, 0.74902, 0.74902, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Whiteout:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:modulate_saturation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1, 3, 4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [1.0, 1.0, 0.0, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_3gtu0"]
+resource_name = "seaside_3"
+length = 7.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Seaside/PlayerCharacterBody:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(320, 104)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Seaside/PlayerCharacterBody:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Seaside/PlayerCharacterBody2:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Seaside/PlayerCharacterBody2:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(192, 128)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Seaside/FrogGreen:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 3, 3.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(296, 144), Vector2(296, 144), Vector2(424, -32)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Seaside/FrogGreen:base_level")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0.0]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Seaside/FrogRed:position")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0, 2, 2.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(264, 144), Vector2(264, 144), Vector2(392, -32)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Seaside/FrogBlue:position")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0, 4, 4.4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(328, 144), Vector2(328, 144), Vector2(456, -32)]
+}
+tracks/8/type = "bezier"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Seaside/Eaglefly:position:x")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"handle_modes": PackedInt32Array(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"points": PackedFloat32Array(136, 0, 0, 0, 0, 136, 0, 0, 0, 0, 264, 0, 0, 0, 0, 392, 0, 0, 0, 0, 296, 0, 0, 0, 0, 168, 0, 0, 0, 0, 296, 0, 0, 0, 0, 424, 0, 0, 0, 0, 328, 0, 0, 0, 0, 200, 0, 0, 0, 0, 328, 0, 0, 0, 0, 456, 0, 0, 0, 0),
+"times": PackedFloat32Array(0, 1.6, 2, 2.4, 2.5, 2.6, 3, 3.4, 3.5, 3.6, 4, 4.4)
+}
+tracks/9/type = "bezier"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Seaside/Eaglefly:position:y")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"handle_modes": PackedInt32Array(0, 1, 0, 1, 1, 0, 1, 1, 0, 1),
+"points": PackedFloat32Array(-24, 0, 0, 0, 0, -24, 0, 0, 0, 0, 120, -0.25, 0, 0.25, 0, -24, 0, 0, 0, 0, -24, 0, 0, 0, 0, 120, -0.25, 0, 0.25, 0, -24, 0, 0, 0, 0, -24, 0, 0, 0, 0, 120, -0.25, 0, 0.25, 0, -24, 0, 0, 0, 0),
+"times": PackedFloat32Array(0, 1.6, 2, 2.4, 2.6, 3, 3.4, 3.6, 4, 4.4)
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("Seaside/Eaglefly/RemoteTransform2D:remote_path")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0, 2, 2.4, 3, 3.4, 4, 4.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [NodePath(""), NodePath("../../FrogRed"), NodePath(""), NodePath("../../FrogGreen"), NodePath(""), NodePath("../../FrogBlue"), NodePath("")]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_wm6yv"]
+_data = {
+"RESET": SubResource("Animation_5efsi"),
+"seaside_1": SubResource("Animation_n20k3"),
+"seaside_2": SubResource("Animation_adf1d"),
+"seaside_3": SubResource("Animation_3gtu0"),
+"transition_1": SubResource("Animation_rrbcc"),
+"transition_2": SubResource("Animation_sprlp"),
+"transition_3": SubResource("Animation_v8l7h")
+}
+
+[node name="Node2D" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_1cr3o")
+
+[node name="SpaceBg" type="Polygon2D" parent="."]
+visible = false
+texture_repeat = 2
+texture = ExtResource("1_0lrxf")
+polygon = PackedVector2Array(0, 0, 512, 0, 512, 288, 0, 288)
+script = SubResource("GDScript_mh4qa")
+
+[node name="Control" parent="." instance=ExtResource("2_8eawy")]
+visible = false
+custom_minimum_size = Vector2(512, 288)
+layout_mode = 1
+pivot_offset = Vector2(256, 144)
+
+[node name="Polygon2D" parent="Control" index="0"]
+visible = false
+
+[node name="VBoxContainer" parent="Control" index="3"]
+visible = false
+
+[node name="Oblo" type="Sprite2D" parent="Control"]
+position = Vector2(256, 144)
+scale = Vector2(2.5, 2.5)
+texture = SubResource("AtlasTexture_6amgu")
+
+[node name="Polygon2D" type="Polygon2D" parent="Control/Oblo"]
+color = Color(0, 0, 0, 1)
+invert_enabled = true
+invert_border = 200.0
+polygon = PackedVector2Array(-136, -144, -136, 144, 136, 144, 136, -144)
+
+[node name="SpaceshipInterior" type="Node2D" parent="."]
+visible = false
+
+[node name="Sprite2D" type="Sprite2D" parent="SpaceshipInterior"]
+position = Vector2(256, 144)
+texture = ExtResource("4_kr2gy")
+region_enabled = true
+region_rect = Rect2(32, 0, 192, 288)
+
+[node name="Captain" type="Sprite2D" parent="SpaceshipInterior"]
+use_parent_material = true
+position = Vector2(256, 112)
+texture = ExtResource("5_fn8ul")
+hframes = 4
+
+[node name="Kairel" type="Sprite2D" parent="SpaceshipInterior"]
+use_parent_material = true
+position = Vector2(208, 128)
+texture = ExtResource("6_suxbx")
+hframes = 4
+
+[node name="Norbitt" type="Sprite2D" parent="SpaceshipInterior"]
+use_parent_material = true
+position = Vector2(304, 128)
+texture = ExtResource("7_ytbwn")
+hframes = 4
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 512.0
+offset_bottom = 288.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 0.5)
+stretch = true
+
+[node name="CanvasLayer" type="SubViewport" parent="SubViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1024, 576)
+render_target_update_mode = 4
+
+[node name="Control" type="Control" parent="SubViewportContainer/CanvasLayer"]
+custom_minimum_size = Vector2(0, 144)
+layout_mode = 3
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="SubViewportContainer/CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/normal_font = ExtResource("8_u1lhp")
+theme_override_font_sizes/normal_font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_hnx71")
+text = "Lorem Ipsum
+Dolor sit Amet"
+scroll_active = false
+visible_characters_behavior = 1
+
+[node name="Whiteout" type="Polygon2D" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0)
+texture_repeat = 2
+material = SubResource("CanvasItemMaterial_pl6b8")
+polygon = PackedVector2Array(0, 0, 512, 0, 512, 288, 0, 288)
+
+[node name="Seaside" parent="." instance=ExtResource("9_gochx")]
+script = null
+
+[node name="FrogGreen" parent="Seaside" index="3"]
+position = Vector2(192, 104)
+rotation = 1.5708
+
+[node name="FrogRed" parent="Seaside" index="4"]
+position = Vector2(-64, 192)
+
+[node name="FrogBlue" parent="Seaside" index="5"]
+position = Vector2(-64, 192)
+
+[node name="PlayerCharacterBody2" parent="Seaside" index="6"]
+position = Vector2(256, 128)
+rotation = 1.5708
+base_level = 1.0
+
+[node name="PlayerCharacterBody" parent="Seaside" index="7"]
+position = Vector2(320, 104)
+rotation = -1.5708
+script = ExtResource("10_qovb2")
+base_level = 1.0
+forward_vector = Vector2(0, 1)
+
+[node name="Eaglefly" parent="Seaside" instance=ExtResource("11_w2g1q")]
+position = Vector2(0, -24)
+script = null
+
+[node name="RemoteTransform2D" type="RemoteTransform2D" parent="Seaside/Eaglefly"]
+position = Vector2(0, 24)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_wm6yv")
+}
+
+[node name="CharacterTimer" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.01
+autostart = true
+
+[connection signal="timeout" from="CharacterTimer" to="." method="_on_character_timer_timeout"]
+
+[editable path="Control"]
+[editable path="Seaside"]

@@ -12,12 +12,15 @@ var color_shift: float = 0
 
 var velocity_field : float = 0
 
+@export
 var forward_vector: Vector2 = Vector2.DOWN
 
 func _process(delta: float) -> void:
-	#modulate = Color().from_hsv(clamp(shift + 1, 0, 2) / 3, 1.0 - base_level, peak_level)
-	modulate = Globals.color_spectrum.sample(color_shift / 2 + .5)
-	modulate *= peak_level
+	modulate = (
+		Globals.color_spectrum.sample(color_shift / 2 + .5) *
+		(peak_level - base_level) +
+		Color.WHITE * base_level
+	)
 
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
