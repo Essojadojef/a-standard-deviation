@@ -19,6 +19,12 @@ var hitstun: float
 
 var can_fly = true
 
+var jump_start_pos: Vector2
+var jump_end_pos: Vector2
+var jump_phase: float
+var jump_count: int
+var jump_timer: float = 3
+
 func _ready() -> void:
 	damage_received.connect(_on_damage_received)
 	seed_rng()
@@ -48,8 +54,9 @@ func _physics_process(delta: float) -> void:
 	
 	velocity = Vector2()
 	
+	if damage != 0:
+		jump_timer -= delta
 	
-	jump_timer -= delta
 	if jump_timer < 0:
 		jump_timer += 2 + rng.randf() * 5
 		jump_count = 1 + rng.randi() % 4
@@ -59,12 +66,6 @@ func _physics_process(delta: float) -> void:
 		process_jump(delta)
 	
 	move_and_slide()
-
-var jump_start_pos: Vector2
-var jump_end_pos: Vector2
-var jump_phase: float
-var jump_count: int
-var jump_timer: float = 3
 
 func process_jump(delta: float):
 	jump_phase = clamp(jump_phase + delta * 4, 0, 1)

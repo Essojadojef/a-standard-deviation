@@ -15,8 +15,18 @@ var rng = RandomNumberGenerator.new()
 
 var hitstun: float
 
+var jump_start_pos: Vector2
+var jump_end_pos: Vector2
+var jump_phase: float
+var jump_count: int
+var jump_timer: float = .5
+
 func _ready() -> void:
 	damage_received.connect(_on_damage_received)
+	
+	if Globals.room_transition:
+		await  Globals.room_transition_finished
+	
 	seed_rng()
 
 func seed_rng():
@@ -42,7 +52,7 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 	
-	# disappear afer hitstun
+	# disappear afer hitstunc
 	if damage > max_damage:
 		queue_free()
 		return
@@ -52,18 +62,12 @@ func _physics_process(delta: float) -> void:
 	
 	jump_timer -= delta
 	if jump_timer < 0:
-		jump_timer += 2 + rng.randf() * 5
+		jump_timer += rng.randf() + .75
 		jump_count = 1 + rng.randi() % 4
 		setup_jump()
 	
 	if jump_count:
 		process_jump(delta)
-
-var jump_start_pos: Vector2
-var jump_end_pos: Vector2
-var jump_phase: float
-var jump_count: int
-var jump_timer: float = 3
 
 func process_jump(delta: float):
 	jump_phase = clamp(jump_phase + delta * 4, 0, 1)
