@@ -46,6 +46,23 @@ func play_bgm(stream: AudioStream):
 	bgm_player.stream = stream
 	bgm_player.play()
 
+func bgm_smooth_change(stream: AudioStream, time:float) -> void:
+	await bgm_fade(.001, time / 2)
+	play_bgm(stream)
+	await bgm_fade(1, time / 2)
+
+func bgm_fade(target_volume: float, time: float) -> void:
+	target_volume = linear_to_db(target_volume)
+	var tween = create_tween()
+	tween.set_trans(Tween.TRANS_EXPO)
+	tween.set_ease(
+		Tween.EASE_IN if target_volume < bgm_player.volume_db else
+		Tween.EASE_OUT
+	)
+	
+	tween.tween_property(bgm_player, "volume_db", target_volume, time)
+	await tween.finished
+
 func _process(delta: float) -> void:
 	for i in process_groups:
 		process_group(i)

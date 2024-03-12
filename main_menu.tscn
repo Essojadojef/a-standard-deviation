@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://dg1ej1mcfp66g"]
+[gd_scene load_steps=28 format=3 uid="uid://dg1ej1mcfp66g"]
 
 [ext_resource type="FontVariation" uid="uid://dehhud25f044g" path="res://fonts/text.tres" id="1_m7b0l"]
 [ext_resource type="Texture2D" uid="uid://e2l1gag5j0sc" path="res://island.png" id="1_sxk15"]
@@ -218,6 +218,14 @@ func _pressed() -> void:
 	get_tree().change_scene_to_file(\"res://rooms/seaside_1.tscn\")
 "
 
+[sub_resource type="GDScript" id="GDScript_bu22k"]
+script/source = "extends Button
+
+func _pressed() -> void:
+	Globals.read_save()
+	get_tree().change_scene_to_file(\"res://rooms/spaceship_interior.tscn\")
+"
+
 [node name="Control" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -283,9 +291,9 @@ text = "Play"
 script = SubResource("GDScript_x2jt0")
 
 [node name="Button2" type="Button" parent="VBoxContainer"]
-visible = false
 layout_mode = 2
 text = "Watch Intro"
+script = SubResource("GDScript_bu22k")
 
 [node name="CheckButton" type="CheckButton" parent="VBoxContainer"]
 visible = false
