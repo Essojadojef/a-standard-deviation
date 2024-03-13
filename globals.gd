@@ -165,8 +165,8 @@ func read_save():
 	
 	progress.forest_1_solved = config.get_value("Progress", "forest_1_solved", false)
 	progress.forest_2_solved = config.get_value("Progress", "forest_2_solved", false)
-	progress.forest_2_solved = config.get_value("Progress", "flower_phase", 0)
-	progress.forest_2_solved = config.get_value("Progress", "golf_cleared", false)
+	progress.flower_phase = config.get_value("Progress", "flower_phase", 0)
+	progress.golf_cleared = config.get_value("Progress", "golf_cleared", false)
 	progress.frogs_obtained  = config.get_value("Progress", "frogs_obtained", 0)
 	progress.cutscenes_seen  = config.get_value("Progress", "cutscenes_seen", 0)
 	
