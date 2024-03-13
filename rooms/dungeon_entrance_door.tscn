@@ -1,8 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://cd2rpbxiq4lp8"]
+[gd_scene load_steps=13 format=3 uid="uid://cd2rpbxiq4lp8"]
 
 [ext_resource type="TileSet" uid="uid://cwh4yu13jthcs" path="res://rooms/tileset_1.tres" id="1_rolll"]
 [ext_resource type="AudioStream" uid="uid://13wxqsl7mshh" path="res://music/Lab Exterior.ogg" id="1_whhxd"]
 [ext_resource type="PackedScene" uid="uid://b8p265bg3n0ee" path="res://characters/player_character.tscn" id="4_6d2e2"]
+[ext_resource type="Texture2D" uid="uid://bt50yh4aaakmg" path="res://props/barrage.png" id="4_80uvg"]
+[ext_resource type="PackedScene" uid="uid://lkb2qg55u2ak" path="res://characters/captain.tscn" id="4_emeqi"]
+[ext_resource type="PackedScene" uid="uid://dl5q6mw5nnx66" path="res://characters/frog.tscn" id="5_plqvc"]
+[ext_resource type="PackedScene" uid="uid://dejw8rprjuom2" path="res://props/dialogue_box.tscn" id="6_e085l"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_328yp"]
 blend_mode = 1
@@ -10,16 +14,165 @@ blend_mode = 1
 [sub_resource type="GDScript" id="GDScript_mod5g"]
 script/source = "extends Room
 
+var line: int = 0
+var text = [
+	# 0
+	\"Aye, you found the treasure!\",
+	\"It must be the treasure because there is an X on it.\",
+	\"In the meantime I've managed to repair the spaceship.\",
+	# 3
+	\"Well now. Let's break this door open.\",
+	# 4
+	\"Now only remains to find Doc's missing parts.\",
+]
+var text_bad_ending = [
+	# 0
+	\"Norbitt, you want to go in?\",
+	\"Mh, ok. You go search for the treasure. I'll look for Doc.\",
+	\"Or what remains of Doc, I guess?\",
+]
+
+func _ready() -> void:
+	$Captain.position = Vector2(-64, -64)
+	$Captain.hide()
+	$Doc.position = Vector2(-32, -64)
+	$Doc.hide()
+	
+	$DialogueBox.hide()
+	$DialogueBox/CharacterTimer.start()
+	
+	$DialogueBox/AudioStreamPlayer.stream = preload(\"res://sounds/captain_voice.tres\")
+	$DialogueBox.voice_hard_sync = true
+	
+	if Globals.progress.last_room:
+		$Captain.position = Vector2(208, 176)
+		$Captain.show()
+	if Globals.progress.last_room and get_completion():
+		$Doc.position = Vector2(304, 176)
+		$Doc.show()
+	
+	super._ready()
+
 func neighbour_rooms(side: int) -> String:
 	match side:
 		SIDE_TOP: return scene_file_path
 		SIDE_BOTTOM: return \"res://rooms/dungeon_entrance_forcefield.tscn\"
 	return super.neighbour_rooms(side)
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	if body.is_in_group(\"player\") and !Globals.progress.last_room:
+		freeze_player(true)
+		perform_cutscene()
+
+func freeze_player(freeze: bool):
+	for i in get_tree().get_nodes_in_group(\"player\"):
+		i.set_physics_process(!freeze)
+
+func perform_cutscene():
+	var tween: Tween
+	
+	$Captain.show()
+	$Captain.forward_vector = Vector2(0, -1)
+	$Doc.show()
+	$Doc.forward_vector = Vector2(0, -1)
+	
+	tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property($Captain, \"position\", Vector2(208, 176), 2)\\
+		.from(Vector2(208, 304))
+	tween.tween_property($Captain, \"forward_vector\", Vector2(0, 1), 0)\\
+		.set_delay(2)
+	tween.tween_property($Doc, \"position\", Vector2(304, 176), 2)\\
+		.from(Vector2(304, 304)).set_delay(1)
+	tween.tween_property($Doc, \"forward_vector\", Vector2(0, 1), 0)\\
+		.set_delay(3)
+	
+	await tween.finished
+	
+	display_line(0)
+
+func get_completion() -> bool:
+	return bool(Globals.progress.frogs_obtained & 7)
+
+func _on_dialogue_box_dialogue_progressed() -> void:
+	
+	match line:
+		2:
+			display_line(3 if get_completion() else 4)
+			return
+		3, 4:
+			Globals.progress.last_room = true
+			$DialogueBox.hide()
+			freeze_player(false)
+			return
+	
+	display_line(line + 1)
+
+func display_line(new_line: int):
+	if new_line >= text.size():
+		return
+	
+	line = new_line
+	$DialogueBox.display_line(text[new_line])
+	
+	var speaker: int = 0 # defaults to captain
+	
+	match line:
+		0, 1, 12, 13, 19, 25:
+			speaker = 1
+		4, 5, 6, 14, 17, 18, 20, 21, 23:
+			speaker = 2
+		2:
+			pass
+			#$SpaceshipInterior/Captain.frame = 2
+		3:
+			pass
+			#$SpaceshipInterior/Captain.frame = 0
+			#tween_jump($SpaceshipInterior/Captain, 2)
+	
+
+
+
+func _on_barrage_broken() -> void:
+	get_tree().change_scene_to_file(\"res://main_menu.tscn\")
 "
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ntqni"]
+size = Vector2(64, 64)
+
+[sub_resource type="GDScript" id="GDScript_fihcm"]
+script/source = "extends Entity
+
+@export_range(0, 1)
+var base_level: float
+@export_range(0, 1)
+var peak_level: float = 1
+@export
+var color_shift: float = 0
+
+signal broken()
+
+func _ready() -> void:
+	damage_received.connect(_on_damage_received)
+
+func _on_damage_received(hit_direction: Vector2):
+	damage += 1
+	Globals.play_sfx(preload(\"res://sounds/hit.wav\"))
+	var hit_shake = Vector2.RIGHT.rotated(randf() * PI)
+	$CollisionShape2D2/Sprite.position = hit_shake
+	
+	if damage >= 3:
+		broken.emit()
+
+"
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_f4iri"]
+size = Vector2(128, 32)
 
 [node name="Node2D" type="Node2D"]
 material = SubResource("CanvasItemMaterial_328yp")
 script = SubResource("GDScript_mod5g")
+clone_multiplier = 3
 bgm = ExtResource("1_whhxd")
 
 [node name="TileMap" type="TileMap" parent="."]
@@ -43,3 +196,63 @@ polygon = PackedVector2Array(0, 0, 0, 320, 512, 320, 512, 0)
 
 [node name="PlayerCharacterBody" parent="." instance=ExtResource("4_6d2e2")]
 position = Vector2(256, 224)
+
+[node name="EntranceArea2D" type="Area2D" parent="."]
+position = Vector2(256, 112)
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="EntranceArea2D"]
+shape = SubResource("RectangleShape2D_ntqni")
+
+[node name="Barrage" type="CharacterBody2D" parent="."]
+use_parent_material = true
+position = Vector2(256, 128)
+collision_layer = 3
+collision_mask = 3
+script = SubResource("GDScript_fihcm")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Barrage"]
+use_parent_material = true
+shape = SubResource("RectangleShape2D_ntqni")
+
+[node name="Sprite" type="Sprite2D" parent="Barrage/CollisionShape2D2"]
+modulate = Color(0.364706, 0.25098, 0.192157, 1)
+use_parent_material = true
+texture = ExtResource("4_80uvg")
+
+[node name="Area2D" type="Area2D" parent="."]
+position = Vector2(256, 176)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_f4iri")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(-96, 0)
+shape = SubResource("RectangleShape2D_ntqni")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(96, 0)
+shape = SubResource("RectangleShape2D_ntqni")
+
+[node name="Captain" parent="." instance=ExtResource("4_emeqi")]
+position = Vector2(208, 304)
+base_level = 1.0
+
+[node name="Doc" parent="." instance=ExtResource("5_plqvc")]
+position = Vector2(-32, -64)
+base_level = 1.0
+
+[node name="DialogueBox" parent="." instance=ExtResource("6_e085l")]
+offset_right = 1024.0
+offset_bottom = 576.0
+
+[node name="Control" parent="DialogueBox/CanvasLayer" index="0"]
+anchors_preset = 10
+anchor_top = 0.0
+anchor_bottom = 0.0
+grow_vertical = 1
+
+[connection signal="broken" from="Barrage" to="." method="_on_barrage_broken"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="dialogue_progressed" from="DialogueBox" to="." method="_on_dialogue_box_dialogue_progressed"]
+
+[editable path="DialogueBox"]

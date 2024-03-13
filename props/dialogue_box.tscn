@@ -1,0 +1,119 @@
+[gd_scene load_steps=5 format=3 uid="uid://dejw8rprjuom2"]
+
+[ext_resource type="FontVariation" uid="uid://dehhud25f044g" path="res://fonts/text.tres" id="1_gq4ca"]
+[ext_resource type="AudioStream" uid="uid://cw4aktmshs30q" path="res://sounds/doc_voice.tres" id="2_hex2i"]
+
+[sub_resource type="GDScript" id="GDScript_m3eg3"]
+script/source = "extends SubViewportContainer
+
+@onready
+var label: RichTextLabel = $CanvasLayer/Control/RichTextLabel
+
+var line: String
+
+var voice_hard_sync: bool = false
+
+signal dialogue_progressed()
+
+func display_line(new_line: String):
+	show()
+	line = new_line
+	label.visible_characters = 0
+	
+
+func _on_character_timer_timeout() -> void:
+	if !line: return
+	
+	label.text = line
+	if label.visible_characters >= 0 and label.visible_ratio < 1:
+		label.visible_characters += 1
+		
+		if voice_hard_sync:
+			$AudioStreamPlayer.play()
+		elif !$AudioStreamPlayer.playing:
+			$AudioStreamPlayer.play()
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"action\"):
+		progress_dialogue()
+
+func progress_dialogue():
+	if !label.is_visible_in_tree() or !visible:
+		return
+	
+	if label.visible_ratio < 1:
+		label.visible_characters = -1
+		return
+	
+	dialogue_progressed.emit()
+
+"
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hnx71"]
+content_margin_left = 32.0
+content_margin_top = 16.0
+content_margin_right = 32.0
+content_margin_bottom = 16.0
+bg_color = Color(0, 0, 0, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 1, 1, 1)
+
+[node name="SubViewportContainer" type="SubViewportContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 512.0
+offset_bottom = 288.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.5, 0.5)
+stretch = true
+script = SubResource("GDScript_m3eg3")
+
+[node name="CanvasLayer" type="SubViewport" parent="."]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1024, 576)
+render_target_update_mode = 4
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+custom_minimum_size = Vector2(0, 144)
+layout_mode = 3
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/normal_font = ExtResource("1_gq4ca")
+theme_override_font_sizes/normal_font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_hnx71")
+text = "Lorem Ipsum
+Dolor sit Amet"
+scroll_active = false
+visible_characters_behavior = 1
+
+[node name="CharacterTimer" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.02
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_hex2i")
+volume_db = -6.0
+
+[connection signal="timeout" from="CharacterTimer" to="." method="_on_character_timer_timeout"]

@@ -104,6 +104,8 @@ func _physics_process(delta: float) -> void:
 	process_attack()
 
 func _input(event: InputEvent) -> void:
+	if !is_physics_processing():
+		return
 	if event.is_action_pressed("action"):
 		attack()
 	if Globals.cheats_enabled and event.is_action_pressed("commute_formation"):

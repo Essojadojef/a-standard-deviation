@@ -6,8 +6,9 @@
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_1utq4"]
 blend_mode = 1
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_1yeqw"]
-radius = 8.0
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_w1tvq"]
+radius = 4.0
+height = 15.0
 
 [node name="PlayerCharacterBody" type="CharacterBody2D"]
 material = SubResource("CanvasItemMaterial_1utq4")
@@ -22,4 +23,5 @@ texture = ExtResource("2_skrds")
 hframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_1yeqw")
+position = Vector2(0, 8)
+shape = SubResource("CapsuleShape2D_w1tvq")

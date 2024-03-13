@@ -8,10 +8,10 @@
 blend_mode = 1
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_7p3un"]
-radius = 8.0
-height = 32.0
+radius = 4.0
+height = 15.0
 
-[node name="PlayerCharacterBody" type="CharacterBody2D"]
+[node name="Captain" type="CharacterBody2D"]
 material = SubResource("CanvasItemMaterial_1utq4")
 use_parent_material = true
 collision_mask = 2
@@ -24,6 +24,7 @@ texture = ExtResource("2_7id7j")
 hframes = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 8)
 shape = SubResource("CapsuleShape2D_7p3un")
 
 [node name="Hurtbox" type="Area2D" parent="." groups=["hurtbox"]]

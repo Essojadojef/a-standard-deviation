@@ -9,6 +9,7 @@ var progress = {
 	"golf_cleared" = false,
 	"frogs_obtained" = 0,
 	"cutscenes_seen" = 0,
+	"last_room" = false,
 }
 
 var cheats_enabled = false
@@ -169,6 +170,7 @@ func read_save():
 	progress.golf_cleared = config.get_value("Progress", "golf_cleared", false)
 	progress.frogs_obtained  = config.get_value("Progress", "frogs_obtained", 0)
 	progress.cutscenes_seen  = config.get_value("Progress", "cutscenes_seen", 0)
+	progress.last_room       = config.get_value("Progress", "last_room", false)
 	
 
 func _input(event: InputEvent) -> void:
