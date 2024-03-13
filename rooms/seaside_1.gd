@@ -9,5 +9,9 @@ func _ready() -> void:
 	$FrogRed.visible = Globals.progress.frogs_obtained & 1
 	$FrogGreen.visible = Globals.progress.frogs_obtained & 2
 	$FrogBlue.visible = Globals.progress.frogs_obtained & 4
-	spawn_clones($PlayerCharacterBody2, clone_multiplier, 1)
 	super._ready()
+
+func  _process(delta: float) -> void:
+	$PlayerCharacterBody2.forward_vector = (
+		$PlayerCharacterBody.position - $PlayerCharacterBody2.position
+	)
