@@ -226,7 +226,8 @@ script/source = "extends Button
 
 func _pressed() -> void:
 	Globals.read_save()
-	get_tree().change_scene_to_file(\"res://rooms/spaceship_interior.tscn\")
+	Globals.progress.cutscenes_seen |= 1
+	get_tree().change_scene_to_file(\"res://rooms/intro_cutscene.tscn\")
 "
 
 [node name="Control" type="Control"]
