@@ -1,0 +1,13 @@
+[gd_resource type="AudioStreamRandomizer" load_steps=3 format=3 uid="uid://bn325hi0fbheo"]
+
+[ext_resource type="AudioStream" uid="uid://djq516odv25ju" path="res://sounds/oh_1.wav" id="1_jbsol"]
+[ext_resource type="AudioStream" uid="uid://v5sb02yad3bg" path="res://sounds/oh_2.wav" id="2_vi4uk"]
+
+[resource]
+random_pitch = 1.5
+random_volume_offset_db = 3.0
+streams_count = 2
+stream_0/stream = ExtResource("1_jbsol")
+stream_0/weight = 0.5
+stream_1/stream = ExtResource("2_vi4uk")
+stream_1/weight = 0.1

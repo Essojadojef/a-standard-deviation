@@ -1,0 +1,16 @@
+[gd_resource type="AudioStreamRandomizer" load_steps=4 format=3 uid="uid://c758bdnwe2cy4"]
+
+[ext_resource type="AudioStream" uid="uid://d4k0xd48ish00" path="res://sounds/digital_squeal_r4.wav" id="1_2000t"]
+[ext_resource type="AudioStream" uid="uid://bab4lvmykgfyx" path="res://sounds/digital_squeal_r3.wav" id="2_vld4x"]
+[ext_resource type="AudioStream" uid="uid://upc7x884dbdx" path="res://sounds/digital_squeal.wav" id="3_0fqfe"]
+
+[resource]
+random_pitch = 1.05
+random_volume_offset_db = 3.0
+streams_count = 3
+stream_0/stream = ExtResource("1_2000t")
+stream_0/weight = 0.5
+stream_1/stream = ExtResource("2_vld4x")
+stream_1/weight = 0.5
+stream_2/stream = ExtResource("3_0fqfe")
+stream_2/weight = 0.1

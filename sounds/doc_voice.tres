@@ -1,0 +1,22 @@
+[gd_resource type="AudioStreamRandomizer" load_steps=6 format=3 uid="uid://cw4aktmshs30q"]
+
+[ext_resource type="AudioStream" uid="uid://b4jji7b45xfs" path="res://sounds/frog_voice_01.wav" id="1_l6gol"]
+[ext_resource type="AudioStream" uid="uid://p2wmtla1lpka" path="res://sounds/frog_voice_02.wav" id="2_d7lnr"]
+[ext_resource type="AudioStream" uid="uid://csjeioblw7swl" path="res://sounds/frog_voice_11.wav" id="4_2a7ec"]
+[ext_resource type="AudioStream" uid="uid://d3mgu1tkjliik" path="res://sounds/frog_voice_12.wav" id="5_k7w4l"]
+[ext_resource type="AudioStream" uid="uid://cwbw3ijjrrg62" path="res://sounds/frog_voice_09.wav" id="11_ao3xd"]
+
+[resource]
+random_pitch = 1.1
+random_volume_offset_db = 3.0
+streams_count = 5
+stream_0/stream = ExtResource("1_l6gol")
+stream_0/weight = 0.5
+stream_1/stream = ExtResource("2_d7lnr")
+stream_1/weight = 1.0
+stream_2/stream = ExtResource("11_ao3xd")
+stream_2/weight = 1.0
+stream_3/stream = ExtResource("4_2a7ec")
+stream_3/weight = 1.0
+stream_4/stream = ExtResource("5_k7w4l")
+stream_4/weight = 1.0

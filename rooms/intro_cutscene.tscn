@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://chm0qadugd1jr"]
+[gd_scene load_steps=26 format=3 uid="uid://chm0qadugd1jr"]
 
 [ext_resource type="Texture2D" uid="uid://gpnsci2k61oi" path="res://stars.png" id="1_0lrxf"]
 [ext_resource type="PackedScene" uid="uid://dg1ej1mcfp66g" path="res://main_menu.tscn" id="2_8eawy"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://dk87texc5wrd1" path="res://rooms/seaside_1.tscn" id="9_gochx"]
 [ext_resource type="Script" path="res://characters/character.gd" id="10_qovb2"]
 [ext_resource type="PackedScene" uid="uid://uu68lsrn1piy" path="res://enemies/eaglefly.tscn" id="11_w2g1q"]
+[ext_resource type="AudioStream" uid="uid://cw4aktmshs30q" path="res://sounds/doc_voice.tres" id="12_tcmsy"]
 
 [sub_resource type="GDScript" id="GDScript_1cr3o"]
 script/source = "extends CanvasItem
@@ -18,41 +19,38 @@ script/source = "extends CanvasItem
 var line = 0
 var text = [
 	# 0
-	
 	\"Captain, land in sight!\", \"It is it. It's the Prism Island planet!\",
 	
 	\"Aye. Received, Norbitt.\",
 	\"Oh boys, tell me if it doesn't look like a place where\" +
 	\" you would hide a treasure.\",
 	
+	# 3
 	\"Well, Captain.\" +
 	\" I agree that it looks like a place where one would hide a treasure...\",
 	\"But are you sure we'll find Goldsuit Gus's treasure there?\",
 	\"People say Prism Island is an exotic and dangerous planet.\",
 	
-	\"Gus lead many scientific misson to study the strange environment of that planet\",
-	\" People said no one visited this planet ever since.\",
+	\"Gus lead many scientific missons to study the strange environment of that planet\",
+	\"I think that, altough they won't admit it,\" +
+	\" many pirates tried to find his treasure there.\",
 	
 	# 9
-	
-	\"but I think people did visit and turned around when they didn't\" +
-	\" manage to solve his puzzles.\",
+	\"But they all turned around when they didn't manage to solve the puzzles.\",
 	\"That Gus loved puzzle and strange things, so if he was to hide something\" +
 	\" that planet would be the perfect spot.\",
 	
 	\"O- Kay boys. Brace yourself, we're about to enter the planet's\" +
-	\" rainbow field. Weirdness incoming.\",
+	\" distorto-sphere. Weirdness incoming.\",
 	
-	\"The rainbow field is messing with the spaceship systems.\",
+	\"The distorto-sphere is messing with the spaceship systems.\",
 	\"I think we're going to crash.\",
 	
 	# 14
-	
 	\"Guys! Are you ok?\",
 	\"Yep. I'm just taking a break.\",
 	
 	# 16
-	
 	\"Wow, is this the beach that makes you gay?\",
 	\"No, it's the prisms. Look.\",
 	\"I've never seen such perfect surfaces naturally occourring.\",
@@ -65,7 +63,7 @@ var text = [
 	
 	#\"Are you like, different character traits of Doc?\",
 	\"Arr, that's another issue we'll have to deal with.\",
-	\"Uh. Well, at lest I'm happy that we are all safe now.\",
+	\"Uh. Well, at least I'm happy that we are all safe now.\",
 	
 	# 24
 	
@@ -80,6 +78,8 @@ var anim_player := $AnimationPlayer
 
 @export
 var modulate_saturation: float = 0
+
+var voice_hard_sync = false
 
 func _ready() -> void:
 	Globals.bgm_smooth_change(preload(\"res://music/Groovy Laboratory.ogg\"), 5)
@@ -99,7 +99,11 @@ func _on_character_timer_timeout() -> void:
 	if line >= text.size():
 		return
 	label.text = text[line]
-	if label.visible_characters >= 0:
+	if label.visible_characters >= 0 and label.visible_ratio < 1:
+		if voice_hard_sync:
+			$AudioStreamPlayer.play()
+		elif !$AudioStreamPlayer.playing:
+			$AudioStreamPlayer.play()
 		label.visible_characters += 1
 
 func perform_cutscene():
@@ -112,7 +116,7 @@ func perform_cutscene():
 	await anim_player.animation_finished
 	
 	$SubViewportContainer.show()
-	label.visible_characters = 0
+	display_line(0)
 	
 	while line < 2:
 		await get_tree().process_frame
@@ -190,6 +194,11 @@ func perform_cutscene():
 	await dialogue_progressed
 	$SubViewportContainer.hide()
 	
+	$Whiteout.show()
+	tween = create_tween()
+	tween.tween_property($Whiteout, \"modulate\", Color(), 1).from(Color() * 0)
+	await tween.finished
+	
 	end_cutscene()
 
 signal dialogue_progressed()
@@ -212,13 +221,25 @@ func progress_dialogue():
 func display_line(new_line: int):
 	line = new_line
 	label.visible_characters = 0
+	var speaker: int = 0 # defaults to captain
 	
 	match line:
+		0, 1, 12, 13, 19, 25:
+			speaker = 1
+		4, 5, 6, 14, 17, 18, 20, 21, 23:
+			speaker = 2
 		2:
 			$SpaceshipInterior/Captain.frame = 2
 		3:
 			$SpaceshipInterior/Captain.frame = 0
 			tween_jump($SpaceshipInterior/Captain, 2)
+	
+	$AudioStreamPlayer.stream = (
+		preload(\"res://sounds/captain_voice.tres\") if speaker == 0 else
+		preload(\"res://sounds/norbitt_voice.tres\") if speaker == 1 else
+		preload(\"res://sounds/doc_voice.tres\")
+	)
+	voice_hard_sync = speaker == 0
 
 func tween_jump(node:Node2D, times: int = 1):
 	var tween = create_tween()
@@ -246,7 +267,7 @@ var velocity: float = 0
 func _process(delta: float) -> void:
 	
 	if accelerate:
-		velocity += delta * 50
+		velocity += delta * 100
 	
 	texture_offset.y += delta * velocity
 "
@@ -773,90 +794,6 @@ tracks/11/keys = {
 "values": [Vector2(1, 0), Vector2(0, 1), Vector2(1, 0), Vector2(0, 1)]
 }
 
-[sub_resource type="Animation" id="Animation_rrbcc"]
-resource_name = "transition_1"
-length = 2.0
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Control/Oblo:scale")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 2),
-"transitions": PackedFloat32Array(0.5, 0.5),
-"update": 0,
-"values": [Vector2(2.5, 2.5), Vector2(2.5, 2.5)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Control:scale")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 2),
-"transitions": PackedFloat32Array(0.5, 1),
-"update": 0,
-"values": [Vector2(1, 1), Vector2(0.5, 0.5)]
-}
-
-[sub_resource type="Animation" id="Animation_sprlp"]
-resource_name = "transition_2"
-length = 4.0
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:modulate_saturation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 2, 4),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [0.0, 1.0, 1.0]
-}
-
-[sub_resource type="Animation" id="Animation_v8l7h"]
-resource_name = "transition_3"
-length = 4.0
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Whiteout:modulate")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 1, 3, 4),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 0,
-"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(0.74902, 0.74902, 0.74902, 1), Color(0.74902, 0.74902, 0.74902, 1)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Whiteout:visible")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 4),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [true, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath(".:modulate_saturation")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0, 1, 3, 4),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 0,
-"values": [1.0, 1.0, 0.0, 0.0]
-}
-
 [sub_resource type="Animation" id="Animation_3gtu0"]
 resource_name = "seaside_3"
 length = 7.0
@@ -991,6 +928,90 @@ tracks/10/keys = {
 "values": [NodePath(""), NodePath("../../FrogRed"), NodePath(""), NodePath("../../FrogGreen"), NodePath(""), NodePath("../../FrogBlue"), NodePath("")]
 }
 
+[sub_resource type="Animation" id="Animation_rrbcc"]
+resource_name = "transition_1"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Control/Oblo:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(0.5, 0.5),
+"update": 0,
+"values": [Vector2(2.5, 2.5), Vector2(2.5, 2.5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Control:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(0.5, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0.5, 0.5)]
+}
+
+[sub_resource type="Animation" id="Animation_sprlp"]
+resource_name = "transition_2"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:modulate_saturation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2, 4),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, 1.0, 1.0]
+}
+
+[sub_resource type="Animation" id="Animation_v8l7h"]
+resource_name = "transition_3"
+length = 4.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Whiteout:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1, 3, 4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 0), Color(0.74902, 0.74902, 0.74902, 1), Color(0.74902, 0.74902, 0.74902, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Whiteout:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:modulate_saturation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 1, 3, 4),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [1.0, 1.0, 0.0, 0.0]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_wm6yv"]
 _data = {
 "RESET": SubResource("Animation_5efsi"),
@@ -1114,13 +1135,6 @@ Dolor sit Amet"
 scroll_active = false
 visible_characters_behavior = 1
 
-[node name="Whiteout" type="Polygon2D" parent="."]
-visible = false
-modulate = Color(1, 1, 1, 0)
-texture_repeat = 2
-material = SubResource("CanvasItemMaterial_pl6b8")
-polygon = PackedVector2Array(0, 0, 512, 0, 512, 288, 0, 288)
-
 [node name="Seaside" parent="." instance=ExtResource("9_gochx")]
 script = null
 
@@ -1152,6 +1166,13 @@ script = null
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="Seaside/Eaglefly"]
 position = Vector2(0, 24)
 
+[node name="Whiteout" type="Polygon2D" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0)
+texture_repeat = 2
+material = SubResource("CanvasItemMaterial_pl6b8")
+polygon = PackedVector2Array(0, 0, 512, 0, 512, 288, 0, 288)
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
 "": SubResource("AnimationLibrary_wm6yv")
@@ -1159,8 +1180,12 @@ libraries = {
 
 [node name="CharacterTimer" type="Timer" parent="."]
 process_callback = 0
-wait_time = 0.01
+wait_time = 0.02
 autostart = true
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("12_tcmsy")
+volume_db = -6.0
 
 [connection signal="timeout" from="CharacterTimer" to="." method="_on_character_timer_timeout"]
 
