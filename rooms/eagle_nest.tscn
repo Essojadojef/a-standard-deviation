@@ -95,7 +95,6 @@ shape = SubResource("RectangleShape2D_fop08")
 
 [node name="Frog" parent="." instance=ExtResource("4_kaibb")]
 position = Vector2(256, 112)
-base_level = 1.0
 
 [node name="Eaglefly" parent="." instance=ExtResource("5_1qhmi")]
 position = Vector2(256, 64)

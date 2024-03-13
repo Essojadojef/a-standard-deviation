@@ -27,6 +27,7 @@ var gui = preload("res://gui.tscn").instantiate()
 var bgm_player: = AudioStreamPlayer.new()
 var bgm_tween: Tween
 var target_bgm_stream: AudioStream
+var sfx_player: = AudioStreamPlayer.new() # single sfx channel
 
 
 var clone_groups: Dictionary
@@ -42,6 +43,10 @@ func _ready() -> void:
 	bgm_player.bus = "BGM"
 	bgm_player.process_mode = Node.PROCESS_MODE_ALWAYS
 	play_bgm(preload("res://music/Seaside exploration r2.ogg"))
+	
+	add_child(sfx_player)
+	bgm_player.bus = "SFX"
+	bgm_player.process_mode = Node.PROCESS_MODE_ALWAYS
 
 func setup_gui():
 	if !gui.is_inside_tree():
@@ -76,6 +81,16 @@ func bgm_fade(target_volume: float, time: float) -> void:
 	
 	bgm_tween.tween_property(bgm_player, "volume_db", target_volume, time)
 	await bgm_tween.finished
+
+func play_sfx(stream: AudioStream):
+	sfx_player.stream = stream
+	sfx_player.play()
+
+func sfx_play_player_character_defeated():
+	bgm_player.volume_db = -60
+	play_sfx(preload("res://sounds/oh_low_2.wav"))
+	await get_tree().create_timer(.2).timeout
+	bgm_player.volume_db = 0
 
 func _process(delta: float) -> void:
 	

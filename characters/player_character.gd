@@ -24,9 +24,16 @@ var focus_color_shift:float = 0
 signal defeated()
 
 func _ready() -> void:
-	max_damage = 3
+	var frogs_obtained: int = 0
+	for i in 3:
+		if Globals.progress.frogs_obtained & (1 << i):
+			frogs_obtained += 1
+	
+	max_damage = 3 + Globals.progress.frogs_obtained
+	
 	damage_received.connect(_on_damage_received)
 	defeated.connect(Globals.gui._on_player_character_defeated.bind(self))
+	defeated.connect(Globals.sfx_play_player_character_defeated)
 
 func _process(delta: float) -> void:
 	modulate = (
@@ -165,4 +172,6 @@ func _on_damage_received(hit_direction: Vector2):
 	#velocity = hit_direction * 300 * pow(2, color_shift * 1.5)
 	velocity = hit_direction * 300 * (randf() + randf())
 	stop_attack()
+	#Globals.play_sfx(preload("res://sounds/hit.wav"))
+	Globals.play_sfx(preload("res://sounds/oh_1.wav"))
 

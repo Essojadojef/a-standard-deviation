@@ -99,6 +99,7 @@ func _on_damage_received(hit_direction: Vector2):
 	jump_count = 0
 	seed_rng()
 	jump_timer = 0
+	Globals.play_sfx(preload("res://sounds/hit.wav"))
 
 func _on_hurtbox_body_entered(body: Node2D) -> void:
 	if body == self: return

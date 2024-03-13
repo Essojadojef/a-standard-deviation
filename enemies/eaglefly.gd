@@ -94,12 +94,15 @@ func setup_jump():
 	jump_phase = 0
 
 func _on_damage_received(hit_direction: Vector2):
+	if hitstun or jump_count > 0:
+		return
+	
 	damage += 1
 	hitstun = .125
 	velocity = hit_direction * 300 * pow(2, color_shift * 1.5)
-	jump_count = 0
 	seed_rng()
 	jump_timer = 0
+	Globals.play_sfx(preload("res://sounds/hit.wav"))
 
 func _on_hurtbox_body_entered(body: Node2D) -> void:
 	if body == self: return
