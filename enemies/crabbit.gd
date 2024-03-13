@@ -53,7 +53,7 @@ func _physics_process(delta: float) -> void:
 		return
 	
 	# disappear afer hitstunc
-	if damage > max_damage:
+	if damage >= max_damage:
 		queue_free()
 		return
 	

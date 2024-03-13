@@ -59,7 +59,7 @@ func _physics_process(delta: float) -> void:
 	
 	visible = true
 	
-	if damage > max_damage:
+	if damage >= max_damage:
 		defeated.emit()
 		queue_free()
 		return
