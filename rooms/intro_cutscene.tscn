@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://chm0qadugd1jr"]
+[gd_scene load_steps=25 format=3 uid="uid://chm0qadugd1jr"]
 
 [ext_resource type="Texture2D" uid="uid://gpnsci2k61oi" path="res://stars.png" id="1_0lrxf"]
 [ext_resource type="PackedScene" uid="uid://dg1ej1mcfp66g" path="res://main_menu.tscn" id="2_8eawy"]
@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://cx2qjwnjbi22c" path="res://characters/captain.png" id="5_fn8ul"]
 [ext_resource type="Texture2D" uid="uid://fw6v6wihkuqw" path="res://characters/frog.png" id="6_suxbx"]
 [ext_resource type="Texture2D" uid="uid://crp5j8668yh3b" path="res://characters/norbitt.png" id="7_ytbwn"]
-[ext_resource type="FontVariation" uid="uid://dehhud25f044g" path="res://fonts/text.tres" id="8_u1lhp"]
+[ext_resource type="PackedScene" uid="uid://dejw8rprjuom2" path="res://props/dialogue_box.tscn" id="8_hq0rp"]
 [ext_resource type="PackedScene" uid="uid://dk87texc5wrd1" path="res://rooms/seaside_1.tscn" id="9_gochx"]
 [ext_resource type="Script" path="res://characters/character.gd" id="10_qovb2"]
 [ext_resource type="PackedScene" uid="uid://uu68lsrn1piy" path="res://enemies/eaglefly.tscn" id="11_w2g1q"]
@@ -29,16 +29,17 @@ var text = [
 	\"Well, Captain.\" +
 	\" I agree that it looks like a place where one would hide a treasure...\",
 	\"But are you sure we'll find Goldsuit Gus's treasure there?\",
-	\"People say Prism Island is an exotic and dangerous planet.\",
+	\"People say Prism Island is an exotic planet and dangerous one at that.\",
 	
-	\"Gus lead many scientific missons to study the strange environment of that planet\",
-	\"I think that, altough they won't admit it,\" +
+	\"Yes, because Gus himself lead many scientific missons to study\" +
+	\" the strange environment found there.\",
+	\"And I think that, altough they won't admit it,\" +
 	\" many pirates tried to find his treasure there.\",
 	
 	# 9
 	\"But they all turned around when they didn't manage to solve the puzzles.\",
-	\"That Gus loved puzzle and strange things, so if he was to hide something\" +
-	\" that planet would be the perfect spot.\",
+	\"That Gus loved puzzle and oddities. So if he was to hide something,\" +
+	\" that would be the perfect spot.\",
 	
 	\"O- Kay boys. Brace yourself, we're about to enter the planet's\" +
 	\" distorto-sphere. Weirdness incoming.\",
@@ -222,17 +223,24 @@ func display_line(new_line: int):
 	line = new_line
 	label.visible_characters = 0
 	var speaker: int = 0 # defaults to captain
+	var face: int = 0
 	
 	match line:
 		0, 1, 12, 13, 19, 25:
 			speaker = 1
-		4, 5, 6, 14, 17, 18, 20, 21, 23:
+		4, 5, 6, 14:
 			speaker = 2
 		2:
 			$SpaceshipInterior/Captain.frame = 2
 		3:
 			$SpaceshipInterior/Captain.frame = 0
 			tween_jump($SpaceshipInterior/Captain, 2)
+		17, 18:
+			speaker = 2
+			face = 1
+		20, 21, 23:
+			speaker = 2
+			face = 2
 	
 	$AudioStreamPlayer.stream = (
 		preload(\"res://sounds/captain_voice.tres\") if speaker == 0 else
@@ -240,6 +248,15 @@ func display_line(new_line: int):
 		preload(\"res://sounds/doc_voice.tres\")
 	)
 	voice_hard_sync = speaker == 0
+	
+	$SubViewportContainer/CanvasLayer/Control/TextureRect.texture = (
+		preload(\"res://characters/text_box_captain.tres\") if speaker == 0 else
+		preload(\"res://characters/text_box_norbit.tres\") if speaker == 1 else
+		
+		preload(\"res://characters/text_box_doc_happy.tres\") if face == 1 else
+		preload(\"res://characters/text_box_doc_rainbow.tres\") if face == 2 else
+		preload(\"res://characters/text_box_doc.tres\")
+	)
 
 func tween_jump(node:Node2D, times: int = 1):
 	var tween = create_tween()
@@ -275,18 +292,6 @@ func _process(delta: float) -> void:
 [sub_resource type="AtlasTexture" id="AtlasTexture_6amgu"]
 atlas = ExtResource("3_q0282")
 region = Rect2(288, 0, 288, 288)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hnx71"]
-content_margin_left = 32.0
-content_margin_top = 16.0
-content_margin_right = 32.0
-content_margin_bottom = 16.0
-bg_color = Color(0, 0, 0, 1)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(1, 1, 1, 1)
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_pl6b8"]
 light_mode = 1
@@ -1088,52 +1093,15 @@ position = Vector2(304, 128)
 texture = ExtResource("7_ytbwn")
 hframes = 4
 
-[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = 512.0
-offset_bottom = 288.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.5, 0.5)
-stretch = true
-
-[node name="CanvasLayer" type="SubViewport" parent="SubViewportContainer"]
-transparent_bg = true
-handle_input_locally = false
-size = Vector2i(1024, 576)
-render_target_update_mode = 4
-
-[node name="Control" type="Control" parent="SubViewportContainer/CanvasLayer"]
-custom_minimum_size = Vector2(0, 144)
-layout_mode = 3
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="RichTextLabel" type="RichTextLabel" parent="SubViewportContainer/CanvasLayer/Control"]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 8.0
-offset_top = 8.0
-offset_right = -8.0
-offset_bottom = -8.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_fonts/normal_font = ExtResource("8_u1lhp")
-theme_override_font_sizes/normal_font_size = 32
-theme_override_styles/normal = SubResource("StyleBoxFlat_hnx71")
-text = "Lorem Ipsum
-Dolor sit Amet"
-scroll_active = false
-visible_characters_behavior = 1
+[node name="SubViewportContainer" parent="." instance=ExtResource("8_hq0rp")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 1024.0
+offset_bottom = 576.0
+grow_horizontal = 1
+grow_vertical = 1
 
 [node name="Seaside" parent="." instance=ExtResource("9_gochx")]
 script = null
