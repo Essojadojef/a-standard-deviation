@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://chm0qadugd1jr"]
+[gd_scene load_steps=26 format=3 uid="uid://chm0qadugd1jr"]
 
 [ext_resource type="Texture2D" uid="uid://gpnsci2k61oi" path="res://stars.png" id="1_0lrxf"]
 [ext_resource type="PackedScene" uid="uid://dg1ej1mcfp66g" path="res://main_menu.tscn" id="2_8eawy"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://dk87texc5wrd1" path="res://rooms/seaside_1.tscn" id="9_gochx"]
 [ext_resource type="Script" path="res://characters/character.gd" id="10_qovb2"]
 [ext_resource type="PackedScene" uid="uid://uu68lsrn1piy" path="res://enemies/eaglefly.tscn" id="11_w2g1q"]
+[ext_resource type="AudioStream" uid="uid://ccc0jjq0nl68" path="res://sounds/eaglefly_cry_2.wav" id="12_fle2m"]
 [ext_resource type="AudioStream" uid="uid://cw4aktmshs30q" path="res://sounds/doc_voice.tres" id="12_tcmsy"]
 
 [sub_resource type="GDScript" id="GDScript_1cr3o"]
@@ -173,6 +174,8 @@ func perform_cutscene():
 	$Seaside/FrogRed.position = $Seaside/FrogGreen.position
 	
 	await get_tree().create_timer(.5).timeout
+	
+	Globals.play_sfx(preload(\"res://sounds/magic.wav\"))
 	
 	var tween = create_tween()
 	tween.set_parallel(true)
@@ -502,6 +505,18 @@ tracks/16/keys = {
 "update": 0,
 "values": [Vector2(0, 1)]
 }
+tracks/17/type = "value"
+tracks/17/imported = false
+tracks/17/enabled = true
+tracks/17/path = NodePath("Seaside/Eaglefly/SfxPlayer:playing")
+tracks/17/interp = 1
+tracks/17/loop_wrap = true
+tracks/17/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
 
 [sub_resource type="Animation" id="Animation_n20k3"]
 resource_name = "seaside_1"
@@ -709,7 +724,7 @@ tracks/4/path = NodePath("Seaside/FrogGreen:position")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
-"times": PackedFloat32Array(0, 1.16, 1.856, 2.668, 4.9, 6.844),
+"times": PackedFloat32Array(0, 1.16, 1.856, 2.668, 5.3, 6.844),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
 "update": 0,
 "values": [Vector2(192, 104), Vector2(256, 104), Vector2(256, 104), Vector2(296, 104), Vector2(296, 104), Vector2(296, 144)]
@@ -793,7 +808,7 @@ tracks/11/path = NodePath("Seaside/FrogGreen:forward_vector")
 tracks/11/interp = 1
 tracks/11/loop_wrap = true
 tracks/11/keys = {
-"times": PackedFloat32Array(0, 1.16, 1.74, 4.524),
+"times": PackedFloat32Array(0, 1.16, 1.74, 4.6),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 1,
 "values": [Vector2(1, 0), Vector2(0, 1), Vector2(1, 0), Vector2(0, 1)]
@@ -931,6 +946,18 @@ tracks/10/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [NodePath(""), NodePath("../../FrogRed"), NodePath(""), NodePath("../../FrogGreen"), NodePath(""), NodePath("../../FrogBlue"), NodePath("")]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("Seaside/Eaglefly/SfxPlayer:playing")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
 }
 
 [sub_resource type="Animation" id="Animation_rrbcc"]
@@ -1133,6 +1160,9 @@ script = null
 
 [node name="RemoteTransform2D" type="RemoteTransform2D" parent="Seaside/Eaglefly"]
 position = Vector2(0, 24)
+
+[node name="SfxPlayer" type="AudioStreamPlayer" parent="Seaside/Eaglefly"]
+stream = ExtResource("12_fle2m")
 
 [node name="Whiteout" type="Polygon2D" parent="."]
 visible = false
