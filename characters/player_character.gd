@@ -21,6 +21,8 @@ var hitstun: float
 var focus_color = false
 var focus_color_shift:float = 0
 
+var idle_time:float = -1
+
 signal defeated()
 
 func _ready() -> void:
@@ -71,8 +73,12 @@ func _physics_process(delta: float) -> void:
 	if direction and player_control:
 		velocity = velocity.lerp(direction * movement_speed, .25)
 		forward_vector = direction
+		idle_time = 0
 	else:
 		velocity = velocity.lerp(Vector2(), .5)
+	
+	if !direction and idle_time >= 0:
+		idle_time += delta
 	
 	if follow_cursor and !direction and !$AttackTimer.time_left:
 		forward_vector = get_cursor_direction()
@@ -102,11 +108,14 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	
 	process_attack()
+	
+	$Emote.visible = idle_time > 5
 
 func _input(event: InputEvent) -> void:
 	if !is_physics_processing():
 		return
 	if event.is_action_pressed("action"):
+		idle_time = -1
 		attack()
 	if Globals.cheats_enabled and event.is_action_pressed("commute_formation"):
 		focus_commute()
