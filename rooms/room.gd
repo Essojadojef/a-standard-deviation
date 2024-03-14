@@ -18,8 +18,10 @@ var exit_transition_directions = {
 func get_entities():
 	return get_children().filter(func(child): return child is Entity)
 
-func _ready() -> void:
+func _init() -> void:
 	Globals.setup_gui()
+
+func _ready() -> void:
 	Globals.bgm_smooth_change(bgm, 2)
 	
 	for i in get_entities():

@@ -23,7 +23,7 @@ signal room_transition_finished(prev_room, direction)
 
 var color_spectrum: Gradient = preload("res://color_spectrum_oklab.tres")
 
-var gui = preload("res://gui.tscn").instantiate()
+var gui
 
 var bgm_player: = AudioStreamPlayer.new()
 var bgm_tween: Tween
@@ -50,8 +50,14 @@ func _ready() -> void:
 	bgm_player.process_mode = Node.PROCESS_MODE_ALWAYS
 
 func setup_gui():
-	if !gui.is_inside_tree():
+	if !gui:
+		gui = preload("res://gui.tscn").instantiate()
 		add_child(gui)
+
+func remove_gui():
+	if gui:
+		gui.queue_free()
+		gui = null
 
 func play_bgm(stream: AudioStream):
 	if bgm_player.stream == stream: return

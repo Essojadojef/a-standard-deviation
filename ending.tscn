@@ -1,8 +1,8 @@
-[gd_scene load_steps=29 format=3 uid="uid://dg1ej1mcfp66g"]
+[gd_scene load_steps=27 format=3 uid="uid://bgikmfvj1attk"]
 
-[ext_resource type="FontVariation" uid="uid://dehhud25f044g" path="res://fonts/text.tres" id="1_m7b0l"]
-[ext_resource type="Texture2D" uid="uid://e2l1gag5j0sc" path="res://island.png" id="1_sxk15"]
-[ext_resource type="Texture2D" uid="uid://gpnsci2k61oi" path="res://stars.png" id="2_e4v41"]
+[ext_resource type="FontVariation" uid="uid://dehhud25f044g" path="res://fonts/text.tres" id="1_unqpf"]
+[ext_resource type="Texture2D" uid="uid://gpnsci2k61oi" path="res://stars.png" id="2_01hwd"]
+[ext_resource type="Texture2D" uid="uid://e2l1gag5j0sc" path="res://island.png" id="3_5ng4r"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0lkh8"]
 bg_color = Color(0, 0, 0, 1)
@@ -18,20 +18,36 @@ corner_radius_bottom_left = 1
 anti_aliasing = false
 
 [sub_resource type="Theme" id="Theme_3xud2"]
-default_font = ExtResource("1_m7b0l")
+default_font = ExtResource("1_unqpf")
 Button/styles/normal = SubResource("StyleBoxFlat_0lkh8")
 CheckButton/styles/normal = SubResource("StyleBoxFlat_0lkh8")
 CheckButton/styles/pressed = SubResource("StyleBoxFlat_0lkh8")
 
-[sub_resource type="GDScript" id="GDScript_651od"]
+[sub_resource type="GDScript" id="GDScript_q0pmt"]
 script/source = "extends Control
 
 func _ready() -> void:
 	Globals.remove_gui()
+	
+	Globals.bgm_fade(.001, 0)
+	
+	$Label.hide()
+	
+	await get_tree().create_timer(3).timeout
+	
+	$Label.show()
+	
+	Globals.play_bgm(preload(\"res://music/Seaside exploration r2.ogg\"))
+	Globals.bgm_fade(1, 5)
+	
+	await get_tree().create_timer(3).timeout
+	
+	get_tree().change_scene_to_file(\"res://main_menu.tscn\")
+	
 "
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_3cisr"]
-atlas = ExtResource("1_sxk15")
+atlas = ExtResource("3_5ng4r")
 region = Rect2(0, 0, 288, 288)
 
 [sub_resource type="VisualShaderNodeMultiplyAdd" id="VisualShaderNodeMultiplyAdd_oppk2"]
@@ -217,26 +233,6 @@ gradient = SubResource("Gradient_75rpw")
 shader = SubResource("VisualShader_lfb4r")
 shader_parameter/SaturationRamp = SubResource("GradientTexture1D_48u67")
 
-[sub_resource type="GDScript" id="GDScript_x2jt0"]
-script/source = "extends Button
-
-func _pressed() -> void:
-	Globals.read_save()
-	if Globals.progress.cutscenes_seen & 1:
-		get_tree().change_scene_to_file(\"res://rooms/seaside_1.tscn\")
-	else:
-		get_tree().change_scene_to_file(\"res://rooms/intro_cutscene.tscn\")
-"
-
-[sub_resource type="GDScript" id="GDScript_bu22k"]
-script/source = "extends Button
-
-func _pressed() -> void:
-	Globals.read_save()
-	Globals.progress.cutscenes_seen |= 1
-	get_tree().change_scene_to_file(\"res://rooms/intro_cutscene.tscn\")
-"
-
 [node name="Control" type="Control"]
 layout_mode = 3
 anchors_preset = 15
@@ -245,14 +241,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_3xud2")
-script = SubResource("GDScript_651od")
+script = SubResource("GDScript_q0pmt")
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
+visible = false
 texture_repeat = 2
-texture = ExtResource("2_e4v41")
+texture = ExtResource("2_01hwd")
 polygon = PackedVector2Array(0, 0, 512, 0, 512, 288, 0, 288)
 
 [node name="TextureRect" type="TextureRect" parent="."]
+visible = false
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -268,6 +266,7 @@ grow_vertical = 2
 texture = SubResource("AtlasTexture_3cisr")
 
 [node name="TextureRect2" type="ColorRect" parent="."]
+visible = false
 material = SubResource("ShaderMaterial_0arlo")
 layout_mode = 1
 anchors_preset = 8
@@ -282,32 +281,17 @@ offset_bottom = 144.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-custom_minimum_size = Vector2(128, 0)
+[node name="Label" type="Label" parent="."]
 layout_mode = 1
-anchors_preset = -1
+anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.75
+anchor_top = 0.5
 anchor_right = 0.5
-anchor_bottom = 0.75
-offset_left = -49.5
-offset_top = -33.0
-offset_right = 49.5
-offset_bottom = 33.0
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -14.5
+offset_right = 20.0
+offset_bottom = 14.5
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="Button" type="Button" parent="VBoxContainer"]
-layout_mode = 2
-text = "Play"
-script = SubResource("GDScript_x2jt0")
-
-[node name="Button2" type="Button" parent="VBoxContainer"]
-layout_mode = 2
-text = "Watch Intro"
-script = SubResource("GDScript_bu22k")
-
-[node name="CheckButton" type="CheckButton" parent="VBoxContainer"]
-visible = false
-layout_mode = 2
-text = "Cheats"
+text = "Thanks for playing"
