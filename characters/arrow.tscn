@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://dcj1cj181tmu7"]
+
+[ext_resource type="Script" path="res://characters/arrow.gd" id="1_pq84k"]
+[ext_resource type="Texture2D" uid="uid://ds5k6sb2ck5ym" path="res://characters/arrow.png" id="2_qhk7f"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_scdms"]
+size = Vector2(16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_t56t8"]
+size = Vector2(32, 16)
+
+[node name="Projectile" type="RigidBody2D"]
+use_parent_material = true
+collision_mask = 2
+script = ExtResource("1_pq84k")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_scdms")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_qhk7f")
+
+[node name="DestroyTimer" type="Timer" parent="."]
+wait_time = 10.0
+autostart = true
+
+[node name="Hurtbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("RectangleShape2D_t56t8")
+
+[connection signal="timeout" from="DestroyTimer" to="." method="_on_destroy_timer_timeout"]
+[connection signal="body_entered" from="Hurtbox" to="." method="_on_hurtbox_body_entered"]

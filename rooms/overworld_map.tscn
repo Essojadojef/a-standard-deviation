@@ -1,5 +1,6 @@
-[gd_scene load_steps=11 format=3 uid="uid://c2mbasm5ax4wv"]
+[gd_scene load_steps=15 format=3 uid="uid://c2mbasm5ax4wv"]
 
+[ext_resource type="PackedScene" uid="uid://bbf3x1pii0mme" path="res://rooms/eagle_nest_topleft.tscn" id="1_87jnq"]
 [ext_resource type="PackedScene" uid="uid://b25gw85jw2bav" path="res://rooms/color_detector.tscn" id="1_muwhe"]
 [ext_resource type="PackedScene" uid="uid://cd2rpbxiq4lp8" path="res://rooms/dungeon_entrance_door.tscn" id="2_66i3m"]
 [ext_resource type="PackedScene" uid="uid://dpi778cmhtdoq" path="res://rooms/dungeon_entrance_forcefield.tscn" id="3_qje8i"]
@@ -10,38 +11,64 @@
 [ext_resource type="PackedScene" uid="uid://cu13liq4vrdxc" path="res://rooms/forest_2.tscn" id="9_hpmrx"]
 [ext_resource type="PackedScene" uid="uid://blk4c2i5de351" path="res://rooms/forest_0_crossing.tscn" id="9_obv78"]
 [ext_resource type="PackedScene" uid="uid://dgdudykh1fcqd" path="res://rooms/forest_3_golf.tscn" id="10_oivg3"]
+[ext_resource type="PackedScene" uid="uid://blae8gw2d70l3" path="res://spaceships/ship.tscn" id="11_n8yri"]
+[ext_resource type="PackedScene" uid="uid://uovicldnaoaw" path="res://rooms/eagle_nest_seaside.tscn" id="11_u4vqp"]
+
+[sub_resource type="GDScript" id="GDScript_wxsxh"]
+script/source = "extends Node2D
+
+func _ready() -> void:
+	$PlayerSpaceship/Camera2D.make_current()
+"
 
 [node name="Node2D" type="Node2D"]
+script = SubResource("GDScript_wxsxh")
 
-[node name="FlowerPuzzle" parent="." instance=ExtResource("1_muwhe")]
-position = Vector2(1536, -416)
+[node name="Node2D" type="Node2D" parent="."]
+process_mode = 4
+scale = Vector2(0.5, 0.5)
 
-[node name="LabEntranceDoor" parent="." instance=ExtResource("2_66i3m")]
-position = Vector2(768, -417)
+[node name="Node2D3" parent="Node2D" instance=ExtResource("1_87jnq")]
+position = Vector2(0, -576)
 
-[node name="LabEntranceForcefield" parent="." instance=ExtResource("3_qje8i")]
-position = Vector2(768, -1)
+[node name="FlowerPuzzle" parent="Node2D" instance=ExtResource("1_muwhe")]
+position = Vector2(2048, -576)
 
-[node name="Forest1" parent="." instance=ExtResource("4_n5xkj")]
-position = Vector2(0, 424)
+[node name="LabEntranceDoor" parent="Node2D" instance=ExtResource("2_66i3m")]
+position = Vector2(1024, -577)
 
-[node name="Forest2" parent="." instance=ExtResource("9_hpmrx")]
+[node name="LabEntranceForcefield" parent="Node2D" instance=ExtResource("3_qje8i")]
+position = Vector2(1024, -1)
+
+[node name="Maze" parent="Node2D" instance=ExtResource("8_6q7p7")]
+position = Vector2(2048, 0)
+
+[node name="Forest2" parent="Node2D" instance=ExtResource("9_hpmrx")]
 position = Vector2(0, -1)
 
-[node name="Seaside3" parent="." instance=ExtResource("5_h5abu")]
-position = Vector2(1536, 831)
+[node name="Forest1" parent="Node2D" instance=ExtResource("4_n5xkj")]
+position = Vector2(0, 576)
 
-[node name="Seaside2" parent="." instance=ExtResource("5_h5abu")]
-position = Vector2(768, 831)
+[node name="ForestCrossing" parent="Node2D" instance=ExtResource("9_obv78")]
+position = Vector2(1024, 576)
 
-[node name="Seaside1" parent="." instance=ExtResource("6_unagk")]
-position = Vector2(0, 831)
+[node name="Forest3Golf" parent="Node2D" instance=ExtResource("10_oivg3")]
+position = Vector2(2045.68, 576.14)
 
-[node name="Maze" parent="." instance=ExtResource("8_6q7p7")]
-position = Vector2(1536, 0)
+[node name="Seaside2" parent="Node2D" instance=ExtResource("5_h5abu")]
+position = Vector2(1024, 1151)
 
-[node name="ForestCrossing" parent="." instance=ExtResource("9_obv78")]
-position = Vector2(768, 416)
+[node name="Seaside1" parent="Node2D" instance=ExtResource("6_unagk")]
+position = Vector2(0, 1151)
 
-[node name="Forest3Golf" parent="." instance=ExtResource("10_oivg3")]
-position = Vector2(1533.68, 416.14)
+[node name="Node2D2" parent="Node2D" instance=ExtResource("11_u4vqp")]
+position = Vector2(2048, 1152)
+
+[node name="PlayerSpaceship" parent="." instance=ExtResource("11_n8yri")]
+collision_mask = 0
+
+[node name="Camera2D" type="Camera2D" parent="PlayerSpaceship"]
+limit_left = 0
+limit_top = -288
+limit_right = 1536
+limit_bottom = 864
